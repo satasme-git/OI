@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "526966204907",
+    "project_id": "io-taxi",
+    "storage_bucket": "io-taxi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526966204907:android:3baa0a51d7548e220a11ae",
+        "android_client_info": {
+          "package_name": "com.satasme.oi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526966204907-dfd5povorvcflb7a6n3qm9gmrf4aj8cf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ7DdtbyGsDkWiTWS_bIi2z_pgDD-hSDw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526966204907-dfd5povorvcflb7a6n3qm9gmrf4aj8cf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
