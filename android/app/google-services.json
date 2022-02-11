@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "526966204907",
-    "project_id": "io-taxi",
-    "storage_bucket": "io-taxi.appspot.com"
+    "project_number": "828395746725",
+    "project_id": "io-satasme-6ddc8",
+    "storage_bucket": "io-satasme-6ddc8.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:526966204907:android:3baa0a51d7548e220a11ae",
+        "mobilesdk_app_id": "1:828395746725:android:1291d6e0de5eea2d80e44c",
         "android_client_info": {
           "package_name": "com.satasme.oi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "526966204907-dfd5povorvcflb7a6n3qm9gmrf4aj8cf.apps.googleusercontent.com",
+          "client_id": "828395746725-6o8ft3q6878n7psql7ojn0ufgjeo6cii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.satasme.oi",
+            "certificate_hash": "137a080f7afe443861b2d69ee5441fdd67aa3b52"
+          }
+        },
+        {
+          "client_id": "828395746725-63r3daieuska0fkd8nkc4h8rlgd27422.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDQ7DdtbyGsDkWiTWS_bIi2z_pgDD-hSDw"
+          "current_key": "AIzaSyBawPIBgMNWS1DBZI1LgOM1DqLujoTcPaA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "526966204907-dfd5povorvcflb7a6n3qm9gmrf4aj8cf.apps.googleusercontent.com",
+              "client_id": "828395746725-63r3daieuska0fkd8nkc4h8rlgd27422.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

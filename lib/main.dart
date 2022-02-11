@@ -1,8 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:oi/facebook_login_controller.dart';
 import 'package:oi/providers/auth/sign_up_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:oi/providers/auth/timer_provider.dart';
+import 'package:oi/providers/auth/user_provider.dart';
 
+import 'package:provider/provider.dart';
+import 'google_login_controller.dart';
 import 'providers/auth/otp_provider.dart';
 import 'screens/splash_screen/splash_screen.dart';
 
@@ -17,7 +21,20 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => SignUpProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => GoogleSignInController(),
+        ),
+          ChangeNotifierProvider(
+          create: (context) => FacebookSignInController(),
+        ), ChangeNotifierProvider(
+          create: (context) => TimerProvider(),
         )
+        
+        
       ],
       child: const MyApp(),
     ),

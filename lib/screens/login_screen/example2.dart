@@ -1,14 +1,16 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:logger/logger.dart';
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/otp_provider.dart';
+import 'package:oi/providers/auth/timer_provider.dart';
 
 import 'package:oi/screens/login_screen/otp_screen.dart';
 import 'package:oi/utils/constatnt.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-
-
 
 class Example2 extends StatefulWidget {
   const Example2({Key? key}) : super(key: key);
@@ -18,10 +20,10 @@ class Example2 extends StatefulWidget {
 }
 
 class _Example2State extends State<Example2> {
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: GestureDetector(
         onTap: () {
@@ -99,16 +101,27 @@ class _Example2State extends State<Example2> {
                           // height: 55,
                           child: Consumer<OTPProvider>(
                             builder: (context, value, child) {
-                              return TextField(
+                              return TextFormField(
                                 controller: value.phoneController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(9),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp("[0-9]")),
+                                  //To remove first '0'
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'^0+')),
+                                  //To remove first '94' or your country code
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'^94+')),
+                                ],
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   labelText: 'Mobile Number',
-                                  // errorText: "Phone number required",
+
                                   // hintText: 'Enter a search term',
                                   // labelStyle: TextStyle(fontSize: 12)
                                 ),
-                                
                               );
                             },
                           ),
@@ -116,50 +129,97 @@ class _Example2State extends State<Example2> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Consumer<OTPProvider>(
-                    builder: (context, value, child) {
-                      return ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(0.0),
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                  Consumer2<OTPProvider, TimerProvider>(
+                    builder: (context, value, value2, child) {
+                      return Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 5, top: 5),
+                            alignment: Alignment.centerLeft,
+                            child: value.checkValidation != true
+                                ? Text(
+                                    value.errorString,
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  )
+                                : null,
                           ),
-                        ),
-                        onPressed: () {
-                          value.test2();
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                                child: const OTPScreen(),
-                                childCurrent: const Example2(),
-                                type: PageTransitionType.rightToLeftJoined,
-                                duration: const Duration(milliseconds: 300),
-                                reverseDuration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInCubic,
-                                alignment: Alignment.topCenter),
-                          );
-                        },
-                        child: Ink(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.black,
-                            // gradient: const LinearGradient(
-                            //     colors: [Colors.red, Colors.orange]),
+                          const SizedBox(
+                            height: 30,
                           ),
-                          child: Container(
-                            padding: const EdgeInsets.all(18),
-                            child:
-                                const Text('Next', textAlign: TextAlign.center),
-                          ),
-                        ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(0.0),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (value2.seconds == 0) {
+                                value.startRegister(context);
+                              } else {
+                                value.codeSent();
+                                value.startRegister(context);
+                                // Fluttertoast.showToast(msg: "Code already sent, Try after 1 minute.");
+                              }
+                            },
+                            child: Ink(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.black,
+                                // gradient: const LinearGradient(
+                                //     colors: [Colors.red, Colors.orange]),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(18),
+                                child: const Text('Next',
+                                    textAlign: TextAlign.center),
+                              ),
+                            ),
+                          )
+                        ],
                       );
                     },
                   ),
+
+                  // Consumer2<OTPProvider, TimerProvider>(
+                  //   builder: (context, value, value2, child) {
+                  //     return ElevatedButton(
+                  //       style: ElevatedButton.styleFrom(
+                  //         padding: const EdgeInsets.all(0.0),
+                  //         elevation: 3,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(30),
+                  //         ),
+                  //       ),
+                  //       onPressed: () {
+                  //         if (value2.seconds == 0) {
+                  //           value.startRegister(context);
+                  //         }
+
+                  //       },
+                  //       child: Ink(
+                  //         width: double.infinity,
+                  //         decoration: BoxDecoration(
+                  //           borderRadius: BorderRadius.circular(15),
+                  //           color: Colors.black,
+                  //           // gradient: const LinearGradient(
+                  //           //     colors: [Colors.red, Colors.orange]),
+                  //         ),
+                  //         child: Container(
+                  //           padding: const EdgeInsets.all(18),
+                  //           child:
+                  //               const Text('Next', textAlign: TextAlign.center),
+                  //         ),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),

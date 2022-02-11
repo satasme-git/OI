@@ -1,18 +1,32 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:oi/controller/auth_controller.dart';
 import 'dart:math';
-
 import 'package:oi/controller/db_controller.dart';
+import 'package:oi/models/user_model.dart';
+import 'package:oi/providers/auth/user_provider.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../screens/login_screen/example2.dart';
+import '../../screens/login_screen/otp_screen.dart';
 
 class OTPProvider extends ChangeNotifier {
   var uuid = Uuid();
-
   var _otpcode = "";
-  var userId = "";
+  var _validation = true;
+  var _errorString = "";
+  var _tryagainbtn = false;
+
+  var _codeallready = false;
+
+  bool get tryAgainBtn => _tryagainbtn;
+
   DatabaseController databaseController = new DatabaseController();
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -21,167 +35,139 @@ class OTPProvider extends ChangeNotifier {
   TextEditingController get phoneController => _phoneNumber;
 
   String get getOTPCode => _otpcode;
-  // Future<void> test(BuildContext context) async {
-  //   try {
-  //     var url = Uri.parse(
-  //         'https://youandmenest.com/tr_reactnative/checkOTPTokenExpired.php');
-  //     var response = await http.get(url);
-  //     if (response.statusCode == 200) {
-  //       Logger().i(response.body);
-  //       if (response.body == "You have logged in") {
-  //         try {
-  //           // var url2 = Uri.parse(
-  //           //     'https://youandmenest.com/tr_reactnative/send_sms_by_otp.php');
-  //           // var response = await http.get(url2);
-  //           // if (response.statusCode == 200) {}
-  //           test2();
-  //         } catch (e) {
-  //           Logger().e(e);
-  //         }
-  //       }
-  //     } else {
-  //       Logger().i("%%%%%%%%%%%%%" + _phoneNumber.text);
-  //     }
-  //   } catch (e) {
-  //     Logger().e(e);
-  //   }
-  // }
+  String get errorString => _errorString;
 
-  String get6DigitNumber() {
-    Random random = Random();
-    String number = '';
-    for (int i = 0; i < 4; i++) {
-      number = number + random.nextInt(9).toString();
-    }
-    return number;
-  }
+  bool get checkValidation => _validation;
 
   void setOtpCode(code) {
     _otpcode = code;
     notifyListeners();
   }
 
+  void changeTryAgainBtn() {
+    _tryagainbtn = true;
+    notifyListeners();
+  }
+
+  void codeSent() {
+    _codeallready = true;
+    notifyListeners();
+  }
+
+  void get6DigitNumber() {
+    Random random = Random();
+    String number = "";
+    for (int i = 0; i < 4; i++) {
+      number = number + random.nextInt(9).toString();
+    }
+    _otpcode = number;
+    notifyListeners();
+  }
+
   bool inputValidation() {
     var isValid = false;
-    if (_phoneNumber.text.isEmpty) {
+    if (_codeallready) {
       isValid = false;
+      _errorString = "Code already sent, Try after 1 minute.";
     } else {
-      isValid = true;
+      if ((_phoneNumber.text.isEmpty)) {
+        isValid = false;
+        _errorString = "Please enter you mobile number";
+      } else if (_phoneNumber.text.length < 9) {
+        isValid = false;
+        _errorString = "Please enter a valid mobile number";
+      } else {
+        isValid = true;
+      }
     }
+
     return isValid;
   }
 
-  Future<void> test2() async {
+  Future<void> startRegister(BuildContext context) async {
+    UserModel userModel;
     try {
-      if (inputValidation()) {
-        userId = uuid.v5(Uuid.NAMESPACE_URL, _phoneNumber.text);
+      get6DigitNumber();
+      final otp = getOTPCode;
+      if (!_tryagainbtn) {
+        if (inputValidation()) {
+          Navigator.push(
+            context,
+            PageTransition(
+                child: const OTPScreen(),
+                childCurrent: const Example2(),
+                type: PageTransitionType.rightToLeftJoined,
+                duration: const Duration(milliseconds: 300),
+                reverseDuration: const Duration(milliseconds: 300),
+                curve: Curves.easeInCubic,
+                alignment: Alignment.topCenter),
+          );
+          // sendOtp(otp);
 
-       
-        // UserCredential userCredential =await auth.
-        // await FirebaseAuth.instance.c();
-
-        //   try {
-        //     UserCredential userCredential =
-        //      await  auth.createUserWithEmailAndPassword(email: "chamijay87@gmail.com",password: "amerck2018");
-        //  Logger().i(">>>>>>>>>>>>>>>>>>>> "+userCredential.user!.uid);
-        //   } on FirebaseAuthException catch (e) {
-        //     if (e.code == 'user-not-found') {
-        //       Logger().i("No user found for that email.");
-        //     } else if (e.code == 'wrong-password') {
-        //       Logger().i("Wrong password provided for that user.");
-        //     }
-        //   }
-
-        // await FirebaseAuth.instance.verifyPhoneNumber(
-        //   phoneNumber: '+94 716460440',
-        //   verificationCompleted: (PhoneAuthCredential credential) {},
-        //   verificationFailed: (FirebaseAuthException e) {
-        //      Logger().i(">>>>>>>>>>>>>>>>>>>>>>>>>>");
-        //     if (e.code == 'invalid-phone-number') {
-        //       Logger().i("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.");
-        //     }
-
-        //     // Handle other errors
-        //   },
-        //   codeSent: (String verificationId, int? resendToken) {},
-        //   codeAutoRetrievalTimeout: (String verificationId) {},
-        // );
-
-        // fetchSingleUser(uid);
-
-// var v4 = uuid.v4();
-
-//////////////////////////////////////////////////
-
-        // // Logger().i(">>>>>>>>> ccc :" + otp);
-         final otp = get6DigitNumber();
-        final response = await http.post(
-          Uri.parse(
-              'https://youandmenest.com/tr_reactnative/send_sms_by_otp.php'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'phone_number': _phoneNumber.text,
-            'otp_code': otp,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          Logger().i(">>>>>>>>> 1 :" + response.body);
-          await DatabaseController().saveUserData(
-            "",
-            "",
+          userModel = (await AuthController().registerUser(
+            context,
             _phoneNumber.text,
             otp,
-            userId,
-          );
+          ))!;
+
+          Provider.of<UserProvider>(context, listen: false)
+              .setUserModel(userModel);
+
+          _validation = true;
         } else {
-          creaeToken();
-          Logger().i(">>>>>>>>> expire :" + response.toString());
+          _validation = false;
         }
       } else {
-        Logger().i(">>>>>>>>> incorrect :");
+        // sendOtp(otp);
+        userModel = (await AuthController().registerUser(
+          context,
+          _phoneNumber.text,
+          otp,
+        ))!;
+
+        Provider.of<UserProvider>(context, listen: false)
+            .setUserModel(userModel);
+        _tryagainbtn = false;
       }
+      notifyListeners();
     } catch (e) {
       Logger().e(e);
     }
   }
 
   Future<void> fetchSingleUser(context, otpval) async {
-    databaseController.getUserData(context, userId, otpval);
+    Provider.of<UserProvider>(context, listen: false)
+        .compareOtp(context, otpval);
+    // databaseController.getUserData(context, otpval);
   }
 
-  Future<void> creaeToken() async {
-    try {
-      var url = Uri.parse('https://youandmenest.com/tr_reactnative/otp.php');
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        Logger().i(response.body);
-        if (response.body == "success") {
-          Logger().i(">>>>>>>>> 4^^^^^^^^^^^^^^^^^^^^^^^^^^^^:" );
-          try {
-            final response = await http.post(
-              Uri.parse(
-                  'https://youandmenest.com/tr_reactnative/send_sms_by_otp.php'),
-              headers: <String, String>{
-                'Content-Type': 'application/json; charset=UTF-8',
-              },
-              body: jsonEncode(
-                  <String, String>{'phone_number': _phoneNumber.text}),
-            );
-            if (response.statusCode == 200) {
-              Logger().i(">>>>>>>>> 4 :" + response.body);
-            }
-          } catch (e) {
-            Logger().e(e);
-          }
-        }
-      } else {
-        Logger().i("%%%%%%%%%%%%%");
-      }
-    } catch (e) {
-      Logger().e(e);
+  void sendOtp(otp) async {
+    final response = await http.post(
+      Uri.parse('https://youandmenest.com/tr_reactnative/send_sms_by_otp.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'phone_number': _phoneNumber.text,
+        'otp_code': otp,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final docId = uuid.v5(Uuid.NAMESPACE_URL, _phoneNumber.text);
+      Logger().i(">>>>>>>>> 1 :" + response.body);
+      // await DatabaseController().saveUserData(
+      //   "",
+      //   "",
+      //   _phoneNumber.text,
+      //   otp,
+      //   docId,
+      // );
+    } else {
+      Logger().i(">>>>>>>>> expire :" +
+          response.body +
+          " / " +
+          response.statusCode.toString());
     }
   }
 }

@@ -1,0 +1,6 @@
+<resources>
+<string name="app_name">OI</string>
+<string name="facebook_app_id">682331559814557</string>
+<string name="fb_login_protocol_scheme">fb682331559814557</string>
+<string name="facebook_client_token">EAAJsk7I95ZA0BAOePP2FB2ApZAoC6lKRE8dqTW0DzCyBYOZB1X7XJLWYwclZC7FSIkCQGYL2TmOGfPrDAuC9qdvEPL0QrQOcaiGogtHN3kgV9gelZCcqyPDjIs01gM8xnwnTv53DevqFRHMwFCS0L829egjebZB5EQuDPv7s3nYmqLS9bjp0Inhhn05UTC92UonlQLQ4rxjuZBahMB2jhgv</string>
+</resources>
