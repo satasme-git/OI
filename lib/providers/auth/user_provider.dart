@@ -3,14 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/auth_controller.dart';
-import 'package:oi/controller/db_controller.dart';
 import 'package:oi/models/user_model.dart';
-import 'package:oi/screens/login_screen/example2.dart';
 import 'package:oi/screens/login_screen/otp_screen.dart';
 import 'package:oi/screens/login_screen/sign_up.dart';
 import 'package:oi/screens/login_screen/successfull_login.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../screens/login_screen/add_phone_number.dart';
 
 class UserProvider extends ChangeNotifier {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -30,9 +32,10 @@ class UserProvider extends ChangeNotifier {
   var _googleSignIn = GoogleSignIn();
   GoogleSignInAccount? googlAaccount;
 
-  final DatabaseController _databaseController = DatabaseController();
+  // final DatabaseController _databaseController = DatabaseController();
+  final AuthController _authController = AuthController();
 
-  late UserModel _userModel;
+  UserModel _userModel = UserModel();
 
   UserModel? get userModel => _userModel;
 
@@ -43,42 +46,37 @@ class UserProvider extends ChangeNotifier {
   TextEditingController get lastNameController => _lastName;
   TextEditingController get emailController => _emailAddress;
 
+  //initialize and check whther the user signed in or not
+  void initializeUser(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var phone_number = prefs.getString('phone_number');
+
+    if (phone_number != null) {
+      await fetchSingleUser(context, phone_number);
+      UtilFuntions.navigateTo(context, SuccessLogin());
+    } else {
+      
+      UtilFuntions.navigateTo(context, AddPhoneNumber());
+    }
+  }
+
   void setUserModel(UserModel usermodel) {
     _userModel = usermodel;
     notifyListeners();
   }
 
-  fetchSingleUser(context, otpval) {
-    Logger().d(otpval + " / " + userModel!.otp);
+  fetchSingleUser(context, phone) async {
+    _userModel = (await _authController.getUserData(phone))!;
+
+    notifyListeners();
   }
 
   void compareOtp(BuildContext context, String otp) {
-   
     if (otp == userModel!.otp) {
-      Navigator.push(
-        context,
-        PageTransition(
-            child: const SignUp(),
-            childCurrent: const OTPScreen(),
-            type: PageTransitionType.rightToLeftJoined,
-            duration: const Duration(milliseconds: 300),
-            reverseDuration: const Duration(milliseconds: 300),
-            curve: Curves.easeInCubic,
-            alignment: Alignment.topCenter),
-      );
-    } 
-    // else if (otp != "") {
-    //   AwesomeDialog(
-    //     context: context,
-    //     dialogType: DialogType.ERROR,
-    //     animType: AnimType.BOTTOMSLIDE,
-    //     title: 'Dialog Title',
-    //     desc: 'Incorrect otp',
-    //     btnCancelOnPress: () {},
-    //     btnOkOnPress: () {},
-    //   ).show();
-    // }
-     else {
+         UtilFuntions.pageTransition(
+              context, const SignUp(), const OTPScreen());
+     
+    } else {
       AwesomeDialog(
         context: context,
         dialogType: DialogType.ERROR,
@@ -92,28 +90,19 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> startRegister(BuildContext context, String uid) async {
-    Navigator.push(
-      context,
-      PageTransition(
-          child: const SuccessLogin(),
-          childCurrent: const SignUp(),
-          type: PageTransitionType.rightToLeftJoined,
-          duration: const Duration(milliseconds: 300),
-          reverseDuration: const Duration(milliseconds: 300),
-          curve: Curves.easeInCubic,
-          alignment: Alignment.topCenter),
-    );
-
-    UserModel userModel;
-    userModel = (await AuthController().updateUser(
+    _userModel;
+    _userModel = (await AuthController().updateUser(
       context,
       uid,
       _firstName.text,
       _lastName.text,
       _emailAddress.text,
     ))!;
+           UtilFuntions.pageTransition(
+              context, const SuccessLogin(), const SignUp());
 
-    Logger().d(userModel.email);
+
+    Logger().d(_userModel.email);
 
     notifyListeners();
   }
@@ -133,18 +122,9 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> successLogout(BuildContext context) async {
     try {
-      Navigator.push(
-        context,
-        PageTransition(
-            child: const Example2(),
-            childCurrent: const SuccessLogin(),
-            type: PageTransitionType.rightToLeftJoined,
-            duration: const Duration(milliseconds: 300),
-            reverseDuration: const Duration(milliseconds: 300),
-            curve: Curves.easeInCubic,
-            alignment: Alignment.topCenter),
-      );
-
+       UtilFuntions.pageTransition(
+              context, const AddPhoneNumber(), const SuccessLogin());
+     
       // notifyListeners();
     } catch (e) {
       Logger().e(e);
@@ -154,17 +134,9 @@ class UserProvider extends ChangeNotifier {
   Future<void> successLogin(
       BuildContext context, String uid, String value) async {
     try {
-      Navigator.push(
-        context,
-        PageTransition(
-            child: const SuccessLogin(),
-            childCurrent: const SignUp(),
-            type: PageTransitionType.rightToLeftJoined,
-            duration: const Duration(milliseconds: 300),
-            reverseDuration: const Duration(milliseconds: 300),
-            curve: Curves.easeInCubic,
-            alignment: Alignment.topCenter),
-      );
+      UtilFuntions.pageTransition(
+              context, const SuccessLogin(), const SignUp());
+     
       UserModel userModel = (await AuthController().updateUser(
         context,
         uid,
@@ -172,8 +144,6 @@ class UserProvider extends ChangeNotifier {
         "",
         value != "fb" ? googlAaccount!.email : userData!["email"],
       ))!;
-
-      // Provider.of<UserProvider>(context,listen: false).setUserData(googlAaccount!,context) ;
 
       notifyListeners();
     } catch (e) {

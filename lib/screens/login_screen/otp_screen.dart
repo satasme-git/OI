@@ -1,19 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_countdown_timer/countdown.dart';
-import 'package:flutter_countdown_timer/countdown_controller.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/otp_provider.dart';
-import 'package:oi/providers/auth/user_provider.dart';
-import 'package:oi/screens/login_screen/example2.dart';
-import 'package:oi/screens/login_screen/sign_up.dart';
+
 import 'package:oi/providers/auth/timer_provider.dart';
 
 import 'package:oi/utils/constatnt.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
+
+import 'add_phone_number.dart';
 
 class OTPScreen extends StatefulWidget {
   const OTPScreen({Key? key}) : super(key: key);
@@ -30,7 +29,13 @@ class _OTPScreenState extends State<OTPScreen> {
     // TODO: implement initState
     super.initState();
     timer = Provider.of<TimerProvider>(context, listen: false);
-    timer.startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer.stopTimer;
+
+    super.dispose();
   }
 
   @override
@@ -48,38 +53,38 @@ class _OTPScreenState extends State<OTPScreen> {
             width: size.width,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 80),
-                    child: CustomText(text: "Enter the 4-digit code"),
-                  ),
-                  const SizedBox(
-                    height: 41,
-                  ),
-                  Image.asset(
-                    Constants.imageAsset('phone_number.png'),
-                  ),
-                  const SizedBox(
-                    height: 21,
-                  ),
-                  const CustomText(
-                    text: "Didn't Recieve Code?",
-                    color: Colors.grey,
-                    fontsize: 13,
-                  ),
-                  const CustomText(
-                    text: "Request Again Get Via SMS",
-                    color: Colors.black,
-                    fontsize: 13,
-                  ),
-                  const SizedBox(
-                    height: 43,
-                  ),
-                  Consumer<OTPProvider>(
-                    builder: (context, value, child) {
-                      return Center(
+              child: Consumer2<OTPProvider, TimerProvider>(
+                builder: (context, value, value2, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 80),
+                        child: CustomText(text: "Enter the 4-digit code"),
+                      ),
+                      const SizedBox(
+                        height: 41,
+                      ),
+                      Image.asset(
+                        Constants.imageAsset('phone_number.png'),
+                      ),
+                      const SizedBox(
+                        height: 21,
+                      ),
+                      const CustomText(
+                        text: "Didn't Recieve Code?",
+                        color: Colors.grey,
+                        fontsize: 13,
+                      ),
+                      const CustomText(
+                        text: "Request Again Get Via SMS",
+                        color: Colors.black,
+                        fontsize: 13,
+                      ),
+                      const SizedBox(
+                        height: 43,
+                      ),
+                      Center(
                         child: RichText(
                           text: TextSpan(children: [
                             TextSpan(
@@ -92,20 +97,11 @@ class _OTPScreenState extends State<OTPScreen> {
                             TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: const Example2(),
-                                        childCurrent: const OTPScreen(),
-                                        type: PageTransitionType
-                                            .rightToLeftJoined,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                        reverseDuration:
-                                            const Duration(milliseconds: 300),
-                                        curve: Curves.easeInCubic,
-                                        alignment: Alignment.topCenter),
-                                  );
+                                  value2.stopTimer();
+                                  value.changeTryAgainBtnfalse();
+                                    UtilFuntions.pageTransition(
+              context, const AddPhoneNumber(), const OTPScreen());
+                                
                                 },
                               text: "  Change",
                               style: const TextStyle(
@@ -116,20 +112,18 @@ class _OTPScreenState extends State<OTPScreen> {
                             )
                           ]),
                         ),
-                      );
-                    },
-                  ),
-                const  SizedBox(
-                    height: 20,
-                  ),
-                  Consumer2<OTPProvider,TimerProvider>(
-                    builder: (context, value,value2, child) {
-                      return PinCodeTextField(
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      PinCodeTextField(
+                        controller: value.otpCodeController,
                         appContext: context,
                         length: 4,
                         obscureText: false,
                         animationType: AnimationType.fade,
-                        animationDuration:const Duration(milliseconds: 300),
+                        animationDuration: const Duration(milliseconds: 300),
+                        keyboardType: TextInputType.number,
                         pinTheme: PinTheme(
                             shape: PinCodeFieldShape.box,
                             borderRadius: BorderRadius.circular(10),
@@ -137,37 +131,40 @@ class _OTPScreenState extends State<OTPScreen> {
                             fieldWidth: 50,
                             activeFillColor: Colors.grey,
                             borderWidth: 1.0),
-                        // errorAnimationController: errorController, // Pass it here
                         onChanged: (values) {
-                          // setCode()
-                          value.setOtpCode(values);
+                          // value.setOtpCode(values);
+                          // if (values.length == 4) {
+                          //   if (timer.stopEnable) {
+                          //     value2.stopTimer();
 
-                          if (values.length == 4) {
-                            value.fetchSingleUser(context, value.getOTPCode);
-                          
-                            value2.stopTimer();
-                          } else {
-                            // Logger().d(">>>>>>>>>>>>>>>");
-                          }
-
-                          // otpvalue = value;
-                          // setState(() {
-                          //   currentText = value;
-                          // });
+                          value.changeTryAgainBtnfalse();
+                          value.fetchSingleUser(context, value.getOTPCode);
+                          //   }
+                          // }
                         },
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const CustomText(
-                    text: "Didn't get the code ?",
-                    fontsize: 12,
-                  ),
-                  Consumer2<TimerProvider,OTPProvider>(
-                    builder: (context, value,value2, child) {
-                      return RichText(
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 5, top: 0),
+                        alignment: Alignment.centerLeft,
+                        child: value.otpcheckValidation != true
+                            ? Text(
+                                value.otperrorString,
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      const CustomText(
+                        text: "Didn't get the code ?",
+                        fontsize: 12,
+                      ),
+                      RichText(
                         text: TextSpan(children: [
                           const TextSpan(
                             text: "Try again in  ",
@@ -176,39 +173,39 @@ class _OTPScreenState extends State<OTPScreen> {
                               fontSize: 13,
                             ),
                           ),
-                          (timer.startEnable)?
-                          TextSpan(
-                            recognizer: TapGestureRecognizer()..onTap = () {
-                              timer.startTimer();
-                              value2.changeTryAgainBtn();
-                              value2.startRegister(context);
-                            },
-                            text: " Try Again",
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ):
-                          TextSpan(
-                            text: '${timer.minute} : ' + '${timer.seconds} ',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          
+                          (timer.startEnable)
+                              ? TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (!value2.getisTapped) {
+                                        value.changeTryAgainBtn();
+                                        value2.setisTapped();
+                                        value2.startTimer();
+                                        value.startRegister(context);
+                                      }
+                                    },
+                                  text: " Try Again",
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                )
+                              : TextSpan(
+                                  text: '${timer.minute} : ' +
+                                      '${timer.seconds} ',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                         ]),
-                      );
-                    },
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Consumer2<OTPProvider,TimerProvider>(
-                    builder: (context, value,value2, child) {
-                      return ElevatedButton(
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(0.0),
                           elevation: 3,
@@ -217,21 +214,9 @@ class _OTPScreenState extends State<OTPScreen> {
                           ),
                         ),
                         onPressed: () {
-                          // value.countdownController.stop();
+                          value2.stopTimer();
+                          value.changeTryAgainBtnfalse();
                           value.fetchSingleUser(context, value.getOTPCode);
-                         value2.stopTimer();
-                          // Navigator.push(
-                          //   context,
-                          //   PageTransition(
-                          //       child: const SignUp(),
-                          //       childCurrent: const OTPScreen(),
-                          //       type: PageTransitionType.rightToLeftJoined,
-                          //       duration: const Duration(milliseconds: 300),
-                          //       reverseDuration:
-                          //           const Duration(milliseconds: 300),
-                          //       curve: Curves.easeInCubic,
-                          //       alignment: Alignment.topCenter),
-                          // );
                         },
                         child: Ink(
                           width: double.infinity,
@@ -247,53 +232,10 @@ class _OTPScreenState extends State<OTPScreen> {
                                 textAlign: TextAlign.center),
                           ),
                         ),
-                      );
-                    },
-                  ),
-                  // Consumer<TimerProvider>(
-                  //   builder: (context, value, child) {
-                  //     return Column(
-                  //       children: [
-                  //         Center(
-                  //           child: Text(
-                  //             '${timer.minute} : ' + '${timer.seconds} ',
-                  //             style: const TextStyle(
-                  //               color: Colors.black,
-                  //               fontSize: 40,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(
-                  //           height: 25,
-                  //         ),
-                  //         Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //           children: [
-                  //             (timer.startEnable)
-                  //                 ? ElevatedButton(
-                  //                     onPressed: timer.startTimer,
-                  //                     child: Text('Start'),
-                  //                   )
-                  //                 : const ElevatedButton(
-                  //                     onPressed: null,
-                  //                     child: Text('Start'),
-                  //                   ),
-                  //             (timer.stopEnable)
-                  //                 ? ElevatedButton(
-                  //                     onPressed: timer.stopTimer,
-                  //                     child: Text('Stop'),
-                  //                   )
-                  //                 : const ElevatedButton(
-                  //                     onPressed: null,
-                  //                     child: Text('Stop'),
-                  //                   ),
-                  //           ],
-                  //         ),
-                  //       ],
-                  //     );
-                  //   },
-                  // ),
-                ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),

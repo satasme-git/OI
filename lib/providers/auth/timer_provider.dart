@@ -1,63 +1,72 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 
 class TimerProvider with ChangeNotifier {
   late Timer _timer;
-
+  // int _hour = 0;
   int _minute = 0;
   int _seconds = 0;
   bool _startEnable = true;
   bool _stopEnable = false;
+  bool _continueEnable = false;
 
+  bool _isTapped = false;
+
+  // int get hour => _hour;
   int get minute => _minute;
   int get seconds => _seconds;
   bool get startEnable => _startEnable;
   bool get stopEnable => _stopEnable;
+  bool get continueEnable => _continueEnable;
+
+  bool get getisTapped => _isTapped;
+
+  void setisTapped() {
+    _isTapped = true;
+
+    notifyListeners();
+  }
 
   void startTimer() {
+    // _hour = 0;
     _minute = 1;
-    _seconds = 10;
+    _seconds = 59;
     _startEnable = false;
     _stopEnable = true;
-    _timer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
-      
-      if (!_startEnable) {
-        if (_seconds < 60 && _seconds > 0) {
-          _seconds--;
+    _continueEnable = false;
 
-        } else if (_seconds <= 0 && _minute > 0) {
-          _seconds = 59;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_seconds < 60 && _seconds > 0) {
+        _seconds--;
+      } else if (_seconds <= 0 && _minute > 0) {
+        _seconds = 59;
 
-          if (_minute == 59) {
-            _minute = 0;
-          } else {
-            _minute--;
-          }
+        if (_minute == 59) {
+          _minute = 0;
         } else {
-          _timer.cancel();
-          _startEnable = true;
+          _minute--;
         }
+      } else {
+        stopTimer();
+        _isTapped = false;
 
-        notifyListeners();
       }
+
+      notifyListeners();
     });
   }
 
   void stopTimer() {
-    Logger().w(" >>>>>>>>> timer is : " + _startEnable.toString());
+
     if (_startEnable == false) {
       _startEnable = true;
-
+      _continueEnable = true;
       _stopEnable = false;
-
-      _seconds = 0;
-      _minute = 0;
+      _timer.cancel();
+       _isTapped = false;
     }
- 
-    _timer.cancel();
     notifyListeners();
   }
- 
+
 }

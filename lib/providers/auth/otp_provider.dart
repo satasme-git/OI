@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
@@ -8,49 +7,58 @@ import 'package:oi/controller/auth_controller.dart';
 import 'dart:math';
 import 'package:oi/controller/db_controller.dart';
 import 'package:oi/models/user_model.dart';
+import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
+import 'package:oi/screens/login_screen/add_phone_number.dart';
+import 'package:oi/screens/login_screen/sign_up.dart';
+import 'package:oi/screens/login_screen/successfull_login.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../screens/login_screen/example2.dart';
 import '../../screens/login_screen/otp_screen.dart';
 
 class OTPProvider extends ChangeNotifier {
   var uuid = Uuid();
   var _otpcode = "";
   var _validation = true;
-  var _errorString = "";
-  var _tryagainbtn = false;
+  var _otpvalidation = true;
 
+  var _errorString = "";
+  var _otperrorString = "";
+  var _tryagainbtn = false;
   var _codeallready = false;
 
+  var _otpfildvalidation = false;
   bool get tryAgainBtn => _tryagainbtn;
 
   DatabaseController databaseController = new DatabaseController();
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   final _phoneNumber = TextEditingController();
+  final _otpCode = TextEditingController();
 
   TextEditingController get phoneController => _phoneNumber;
+  TextEditingController get otpCodeController => _otpCode;
 
   String get getOTPCode => _otpcode;
   String get errorString => _errorString;
+  String get otperrorString => _otperrorString;
 
   bool get checkValidation => _validation;
+  bool get otpcheckValidation => _otpvalidation;
 
-  void setOtpCode(code) {
-    _otpcode = code;
-    notifyListeners();
-  }
+  bool get otpFieldValidation => _otpfildvalidation;
 
   void changeTryAgainBtn() {
     _tryagainbtn = true;
     notifyListeners();
   }
 
-  void codeSent() {
-    _codeallready = true;
+  void changeTryAgainBtnfalse() {
+    _tryagainbtn = false;
     notifyListeners();
   }
 
@@ -62,6 +70,18 @@ class OTPProvider extends ChangeNotifier {
     }
     _otpcode = number;
     notifyListeners();
+  }
+
+  bool inputOtpValidation() {
+    var isValid = false;
+    if ((_otpCode.text.isEmpty)) {
+      isValid = false;
+      _otperrorString = "Please enter OTP number";
+    } else if (_otpCode.text.length == 4) {
+      isValid = true;
+    }
+
+    return isValid;
   }
 
   bool inputValidation() {
@@ -89,36 +109,44 @@ class OTPProvider extends ChangeNotifier {
     try {
       get6DigitNumber();
       final otp = getOTPCode;
+
+      final result = (await AuthController().loginCheck(
+        _phoneNumber.text,
+      ));
+
       if (!_tryagainbtn) {
         if (inputValidation()) {
-          Navigator.push(
-            context,
-            PageTransition(
-                child: const OTPScreen(),
-                childCurrent: const Example2(),
-                type: PageTransitionType.rightToLeftJoined,
-                duration: const Duration(milliseconds: 300),
-                reverseDuration: const Duration(milliseconds: 300),
-                curve: Curves.easeInCubic,
-                alignment: Alignment.topCenter),
-          );
-          // sendOtp(otp);
+          UtilFuntions.pageTransition(
+              context, const OTPScreen(), const AddPhoneNumber());
 
-          userModel = (await AuthController().registerUser(
-            context,
-            _phoneNumber.text,
-            otp,
-          ))!;
+          Provider.of<TimerProvider>(context, listen: false).startTimer();
 
-          Provider.of<UserProvider>(context, listen: false)
-              .setUserModel(userModel);
+          sendOtp(otp);
+          if (result) {
+            userModel = (await AuthController().updateUser1(
+              context,
+              _phoneNumber.text,
+              otp,
+            ))!;
+            Provider.of<UserProvider>(context, listen: false)
+                .setUserModel(userModel);
+          } else {
+            userModel = (await AuthController().registerUser(
+              context,
+              _phoneNumber.text,
+              otp,
+            ))!;
+
+            Provider.of<UserProvider>(context, listen: false)
+                .setUserModel(userModel);
+          }
 
           _validation = true;
         } else {
           _validation = false;
         }
       } else {
-        // sendOtp(otp);
+        sendOtp(otp);
         userModel = (await AuthController().registerUser(
           context,
           _phoneNumber.text,
@@ -136,9 +164,39 @@ class OTPProvider extends ChangeNotifier {
   }
 
   Future<void> fetchSingleUser(context, otpval) async {
-    Provider.of<UserProvider>(context, listen: false)
-        .compareOtp(context, otpval);
-    // databaseController.getUserData(context, otpval);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel? userModel;
+    if (inputOtpValidation()) {
+      bool startEnable =
+          Provider.of<TimerProvider>(context, listen: false).startEnable;
+      if (!startEnable) {
+        userModel = Provider.of<UserProvider>(context, listen: false).userModel;
+
+        if (_otpCode.text == userModel!.otp) {
+          prefs.setString('phone_number', _phoneNumber.text);
+
+          if (userModel.status == 0) {
+            UtilFuntions.pageTransition(
+                context, const SignUp(), const OTPScreen());
+          } else {
+            UtilFuntions.pageTransition(
+                context, const SuccessLogin(), const OTPScreen());
+          }
+
+          Provider.of<TimerProvider>(context, listen: false).stopTimer();
+          _otpvalidation = true;
+        } else {
+          _otperrorString = "OTP is Incorrect. Please insert correct OTP";
+          _otpvalidation = false;
+        }
+      } else {
+        // _otperrorString = "OTP is expire. please try again";
+        _otpvalidation = false;
+      }
+    } else {
+      _otpvalidation = false;
+    }
+    notifyListeners();
   }
 
   void sendOtp(otp) async {
@@ -155,19 +213,6 @@ class OTPProvider extends ChangeNotifier {
 
     if (response.statusCode == 200) {
       final docId = uuid.v5(Uuid.NAMESPACE_URL, _phoneNumber.text);
-      Logger().i(">>>>>>>>> 1 :" + response.body);
-      // await DatabaseController().saveUserData(
-      //   "",
-      //   "",
-      //   _phoneNumber.text,
-      //   otp,
-      //   docId,
-      // );
-    } else {
-      Logger().i(">>>>>>>>> expire :" +
-          response.body +
-          " / " +
-          response.statusCode.toString());
     }
   }
 }

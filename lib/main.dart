@@ -1,13 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:oi/facebook_login_controller.dart';
 import 'package:oi/providers/auth/sign_up_provider.dart';
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
-
+import 'package:oi/screens/adress_screen/search_address2.dart';
+import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:provider/provider.dart';
-import 'google_login_controller.dart';
 import 'providers/auth/otp_provider.dart';
+import 'screens/home_screen/map_screen.dart';
 import 'screens/splash_screen/splash_screen.dart';
 
 Future<void> main() async {
@@ -26,15 +26,8 @@ Future<void> main() async {
           create: (context) => UserProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => GoogleSignInController(),
-        ),
-          ChangeNotifierProvider(
-          create: (context) => FacebookSignInController(),
-        ), ChangeNotifierProvider(
           create: (context) => TimerProvider(),
         )
-        
-        
       ],
       child: const MyApp(),
     ),
@@ -53,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(),
+      home: MapSample(),
     );
   }
 }
