@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/user_provider.dart';
 import 'package:oi/utils/constatnt.dart';
@@ -77,7 +77,8 @@ class _SignUpState extends State<SignUp> {
                               }
                             },
                             decoration: InputDecoration(
-                              labelStyle: GoogleFonts.poppins(
+                              
+                              labelStyle:TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
                               ),
@@ -106,7 +107,7 @@ class _SignUpState extends State<SignUp> {
                               }
                             },
                             decoration: InputDecoration(
-                              labelStyle: GoogleFonts.poppins(
+                              labelStyle: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
                               ),
@@ -135,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                               contentPadding: EdgeInsets.all(15),
                               labelText: "Email Address",
                               hintText: "Enter email  here",
-                              labelStyle: GoogleFonts.poppins(
+                              labelStyle: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
                               ),

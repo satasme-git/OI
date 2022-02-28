@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:oi/utils/app_colors.dart';
 import 'package:oi/utils/util_funtions.dart';
@@ -300,8 +301,22 @@ class MapSampleState extends State<MapSample> {
                   color: Colors.grey[50],
                   child: TextField(
                     onTap: () {
-                      UtilFuntions.pageTransition(
-                          context, SelectAddress(), MapSample());
+                      // UtilFuntions.pageTransition(
+                      //     context, SelectAddress(), MapSample());
+                      Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          apiKey: "AIzaSyA5aG5dcbUf5M4JIElvBgxb1Of6ScNl7N0",   // Put YOUR OWN KEY here. Should be the same for android and ios
+          onPlacePicked: (result) { 
+            print(result.adrAddress); 
+            Navigator.of(context).pop();
+          },
+          initialPosition: LatLng(37.42796133580664, -122.085749655962),
+          useCurrentLocation: true,
+        ),
+      ),
+    );
                     },
                     // enabled: false, //Not clickable and not editable
                     readOnly: true,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 class CustomTextField extends StatefulWidget {
   const CustomTextField({
@@ -35,10 +35,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
         hintText: widget.hintext, //"Enter first name here",
         labelText: widget.labeltext, //"First Name",
         fillColor: Colors.red,
-        labelStyle: GoogleFonts.poppins(
-          color: Colors.black,
+        labelStyle:
+        TextStyle(
+                    color: Colors.black,
           fontSize: 12,
         ),
+        //  GoogleFonts.poppins(
+        //   color: Colors.black,
+        //   fontSize: 12,
+        // ),
 
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
