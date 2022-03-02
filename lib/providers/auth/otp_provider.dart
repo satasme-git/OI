@@ -9,6 +9,7 @@ import 'package:oi/controller/db_controller.dart';
 import 'package:oi/models/user_model.dart';
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
+import 'package:oi/screens/adress_screen/search_address2.dart';
 import 'package:oi/screens/login_screen/add_phone_number.dart';
 import 'package:oi/screens/login_screen/sign_up.dart';
 import 'package:oi/screens/login_screen/successfull_login.dart';
@@ -18,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../screens/home_screen/map_screen.dart';
 import '../../screens/login_screen/otp_screen.dart';
 
 class OTPProvider extends ChangeNotifier {
@@ -180,7 +182,7 @@ class OTPProvider extends ChangeNotifier {
                 context, const SignUp(), const OTPScreen());
           } else {
             UtilFuntions.pageTransition(
-                context, const SuccessLogin(), const OTPScreen());
+                context,  MapSample(), const OTPScreen());
           }
 
           Provider.of<TimerProvider>(context, listen: false).stopTimer();

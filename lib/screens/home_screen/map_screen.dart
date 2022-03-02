@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:oi/utils/app_colors.dart';
 import 'package:oi/utils/util_funtions.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import '../../providers/auth/user_provider.dart';
+import '../adress_screen/search_address2.dart';
 
 class MapSample extends StatefulWidget {
   @override
@@ -13,7 +19,7 @@ class MapSample extends StatefulWidget {
 }
 
 class MapSampleState extends State<MapSample> {
-  bool isSignupScreen = true;
+  bool isSignupScreen = false;
   void isSignUp(bool val) {
     setState(() {
       isSignupScreen = val;
@@ -23,8 +29,8 @@ class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(6.927079, 79.861244),
+    zoom: 16,
   );
 
   static final CameraPosition _kLake = CameraPosition(
@@ -33,13 +39,199 @@ class MapSampleState extends State<MapSample> {
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
 
+  late GoogleMapController newGooleMapController;
+
+  late Position currentPosition;
+  var geoLocator = Geolocator();
+
+  void locatePosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currentPosition = position;
+    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
+    CameraPosition cameraPosition =
+        new CameraPosition(target: latLngPosition, zoom: 14);
+    newGooleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
   @override
   Widget build(BuildContext context) {
+    
+
+    //  if(clock_val>)
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      extendBodyBehindAppBar: true,
+
+      appBar: AppBar(
+        // title: new Text(
+        //   "Hello World",
+        //   style: TextStyle(color: Colors.amber),
+        // ),
+
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Container(
+            height: 5,
+            width: 5,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.white),
+            child: Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  icon: const Icon(MaterialCommunityIcons.sort_variant),
+                  color: Colors.black,
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(
+                "User",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+              accountEmail: Text(
+                "user@gmail.com",
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ),
+            Center(
+              child: Consumer<UserProvider>(
+                builder: (context, value, child) {
+                  if (value.googlAaccount != null) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                            backgroundImage: Image.network(
+                                    value.googlAaccount!.photoUrl ?? '')
+                                .image,
+                            radius: 50),
+                        Text(value.googlAaccount!.displayName ?? ''),
+                        Text(value.googlAaccount!.email),
+                        ActionChip(
+                            avatar: Icon(Icons.logout),
+                            label: Text("logout"),
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.remove('phone_number');
+                              Provider.of<UserProvider>(context, listen: false)
+                                  .logOut(context);
+                            }),
+                      ],
+                    );
+                  } else if (value.userData != null) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(value.userData!["name"] ?? ''),
+                        Text(">>> : " + value.userData!["email"]),
+                        ActionChip(
+                            avatar: Icon(Icons.logout),
+                            label: Text("logout"),
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.remove('phone_number');
+                              Provider.of<UserProvider>(context, listen: false)
+                                  .logOutFb(context);
+                            }),
+                      ],
+                    );
+                  } else {
+                    return Consumer<UserProvider>(
+                      builder: (context, value, child) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(value.userModel!.firstname.toString()),
+                              Text(value.userModel!.email.toString()),
+                              ActionChip(
+                                  avatar: Icon(Icons.logout),
+                                  label: Text("logout"),
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    prefs.remove('phone_number');
+                                    Provider.of<UserProvider>(context,
+                                            listen: false)
+                                        .logOut(context);
+                                  }),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Stack(
         children: [
           MapWidget(kGooglePlex: _kGooglePlex, controller: _controller),
+          // Positioned(
+          //   top: 40,
+          //   child: InkWell(
+          //     onTap: () {},
+          //     child: Container(
+          //       height: 40,
+          //       width: 40,
+          //       decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(10),
+          //           color: Colors.white),
+          //       child: Icon(
+          //         MaterialCommunityIcons.sort_variant,
+          //         color: Colors.black,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 700),
+            curve: Curves.easeInOutBack,
+            bottom: isSignupScreen ? 250 : 200,
+            right: 20,
+            child: InkWell(
+              onTap: () async {
+                newGooleMapController = await _controller.future;
+                locatePosition();
+              },
+              child: Container(
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 1,
+                          spreadRadius: 2),
+                    ]),
+                child: Icon(Icons.gps_fixed),
+              ),
+            ),
+          ),
           AnimatedPositioned(
             duration: Duration(milliseconds: 700),
             curve: Curves.easeInOutBack,
@@ -301,22 +493,8 @@ class MapSampleState extends State<MapSample> {
                   color: Colors.grey[50],
                   child: TextField(
                     onTap: () {
-                      // UtilFuntions.pageTransition(
-                      //     context, SelectAddress(), MapSample());
-                      Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PlacePicker(
-          apiKey: "AIzaSyA5aG5dcbUf5M4JIElvBgxb1Of6ScNl7N0",   // Put YOUR OWN KEY here. Should be the same for android and ios
-          onPlacePicked: (result) { 
-            print(result.adrAddress); 
-            Navigator.of(context).pop();
-          },
-          initialPosition: LatLng(37.42796133580664, -122.085749655962),
-          useCurrentLocation: true,
-        ),
-      ),
-    );
+                      UtilFuntions.pageTransition(
+                          context, SearchAddress2(), MapSample());
                     },
                     // enabled: false, //Not clickable and not editable
                     readOnly: true,
@@ -339,8 +517,13 @@ class MapSampleState extends State<MapSample> {
                 Container(
                   height: 40,
                   color: Colors.grey[50],
-                  child: const TextField(
-                    decoration: InputDecoration(
+                  child: TextField(
+                    onTap: () {
+                      UtilFuntions.pageTransition(
+                          context, SearchAddress2(), MapSample());
+                    },
+                    readOnly: true,
+                    decoration: const InputDecoration(
                       hintStyle: TextStyle(fontSize: 17),
                       hintText: 'Where are you going',
                       suffixIcon: Align(
@@ -482,7 +665,7 @@ class MapSampleState extends State<MapSample> {
 }
 
 class MapWidget extends StatelessWidget {
-  const MapWidget({
+  MapWidget({
     Key? key,
     required CameraPosition kGooglePlex,
     required Completer<GoogleMapController> controller,
@@ -493,18 +676,58 @@ class MapWidget extends StatelessWidget {
   final CameraPosition _kGooglePlex;
   final Completer<GoogleMapController> _controller;
 
+  late GoogleMapController newGooleMapController;
+
+  late Position currentPosition;
+  var geoLocator = Geolocator();
+
+  void locatePosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currentPosition = position;
+    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
+    CameraPosition cameraPosition =
+        new CameraPosition(target: latLngPosition, zoom: 14);
+    newGooleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isNight_map = false;
+    DateFormat dateFormat = new DateFormat.Hm();
+    DateTime now = DateTime.now();
+    now = DateTime.parse(now.toString());
+    final start = DateTime(now.year, now.month, now.day, 19, 00);
+    final stop = DateTime(now.year, now.month, now.day, 06, 00);
+    if (now.isAfter(start) && now.isBefore(stop)) {
+      isNight_map = false;
+     
+    } else {
+      isNight_map = true;
+    
+    }
+
     var size = MediaQuery.of(context).size;
     return SizedBox(
       height: size.height,
       child: GoogleMap(
-        mapType: MapType.normal,
         myLocationButtonEnabled: false,
+        compassEnabled: true,
+        mapToolbarEnabled: false,
+        myLocationEnabled: true,
+        mapType: MapType.normal,
         zoomControlsEnabled: false,
+        zoomGesturesEnabled: true,
         initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
+        onMapCreated: (GoogleMapController controller) async {
           _controller.complete(controller);
+          newGooleMapController = controller;
+          String value =isNight_map? await DefaultAssetBundle.of(context)
+              .loadString('assets/map_styles/map_style.json'):await DefaultAssetBundle.of(context)
+              .loadString('assets/map_styles/map_style_night.json');
+          newGooleMapController.setMapStyle(value);
+          locatePosition();
         },
         markers: {
           const Marker(

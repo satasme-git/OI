@@ -4,6 +4,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/auth_controller.dart';
 import 'package:oi/models/user_model.dart';
+import 'package:oi/screens/adress_screen/search_address2.dart';
+import 'package:oi/screens/home_screen/map_screen.dart';
 import 'package:oi/screens/login_screen/otp_screen.dart';
 import 'package:oi/screens/login_screen/sign_up.dart';
 import 'package:oi/screens/login_screen/successfull_login.dart';
@@ -53,7 +55,7 @@ class UserProvider extends ChangeNotifier {
 
     if (phone_number != null) {
       await fetchSingleUser(context, phone_number);
-      UtilFuntions.navigateTo(context, SuccessLogin());
+      UtilFuntions.navigateTo(context, MapSample());
     } else {
       
       UtilFuntions.navigateTo(context, AddPhoneNumber());
@@ -99,7 +101,7 @@ class UserProvider extends ChangeNotifier {
       _emailAddress.text,
     ))!;
            UtilFuntions.pageTransition(
-              context, const SuccessLogin(), const SignUp());
+              context,  MapSample(), const SignUp());
 
 
     Logger().d(_userModel.email);
@@ -123,7 +125,7 @@ class UserProvider extends ChangeNotifier {
   Future<void> successLogout(BuildContext context) async {
     try {
        UtilFuntions.pageTransition(
-              context, const AddPhoneNumber(), const SuccessLogin());
+              context, const AddPhoneNumber(),  MapSample());
      
       // notifyListeners();
     } catch (e) {
@@ -135,7 +137,7 @@ class UserProvider extends ChangeNotifier {
       BuildContext context, String uid, String value) async {
     try {
       UtilFuntions.pageTransition(
-              context, const SuccessLogin(), const SignUp());
+              context,  MapSample(), const SignUp());
      
       UserModel userModel = (await AuthController().updateUser(
         context,

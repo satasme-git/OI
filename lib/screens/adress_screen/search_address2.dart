@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:oi/screens/adress_screen/place_service.dart';
+import 'package:oi/utils/global_data.dart';
+import 'package:oi/utils/util_funtions.dart';
 
 class SearchAddress2 extends StatefulWidget {
   const SearchAddress2({Key? key}) : super(key: key);
@@ -11,6 +16,12 @@ class SearchAddress2 extends StatefulWidget {
 
 class _SearchAddress2State extends State<SearchAddress2> {
   final _destinationController = TextEditingController();
+  @override
+  void dispose() {
+    _destinationController.dispose();
+    super.dispose();
+  }
+
   PlaceApi _placeApi = PlaceApi.instance;
   bool buscando = false;
   List<Place> _predictions = [];
@@ -71,25 +82,27 @@ class _SearchAddress2State extends State<SearchAddress2> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Enter th description",
+          "Enter the description",
           style: TextStyle(
               fontSize: 15.0, color: Colors.black, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            UtilFuntions.goBack(context);
+          },
           icon: Icon(Icons.arrow_back),
           color: Colors.black,
         ),
         bottom: PreferredSize(
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
             child: Column(
               children: [
                 AddressInput(
                   iconData: Icons.gps_fixed,
-                  hintText: "Enter addres here",
+                  hintText: "Enter pick location here",
                   enabled: false,
                 ),
                 SizedBox(
@@ -100,7 +113,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
                     AddressInput(
                       controller: _destinationController,
                       iconData: Icons.place_sharp,
-                      hintText: "abc",
+                      hintText: "Enter drop location here",
                       onChanged: this._inputOnChanged,
                       enabled: true,
                     ),
@@ -116,7 +129,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
               ],
             ),
           ),
-          preferredSize: Size.fromHeight(70),
+          preferredSize: Size.fromHeight(100),
         ),
       ),
       body: Container(
@@ -177,8 +190,30 @@ class _SearchAddress2State extends State<SearchAddress2> {
                           // SizedBox(width: 10,),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Set location on map",
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PlacePicker(
+                                      apiKey: GlobalData
+                                          .API_key, // Put YOUR OWN KEY here. Should be the same for android and ios
+                                      onPlacePicked: (result) {
+                                        Logger().i(result.formattedAddress);
+                                        // print(result.adrAddress);
+                                        Navigator.of(context).pop();
+                                      },
+                                      initialPosition: const LatLng(
+                                          37.42796133580664, -122.085749655962),
+                                      useCurrentLocation: true,
+                                      
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Set location on map",
+                              ),
                             ),
                           ),
                         ],
@@ -193,7 +228,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
                           ),
                         ),
                       ),
-                      addressTile(Icons.home_outlined,"Home",22),
+                      addressTile(Icons.home_outlined, "Home", 22),
                       Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Container(
@@ -204,7 +239,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
                           ),
                         ),
                       ),
-                      addressTile(Icons.work_outline,"Add Work",18),
+                      addressTile(Icons.work_outline, "Add Work", 18),
                     ],
                   ),
                 ),
@@ -215,7 +250,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
     );
   }
 
-  Row addressTile(IconData icon,String title,double iconSize) {
+  Row addressTile(IconData icon, String title, double iconSize) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -227,7 +262,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Icon(
-           icon,
+            icon,
             size: iconSize,
             color: Colors.blueAccent,
           ),
