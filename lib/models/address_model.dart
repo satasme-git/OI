@@ -2,8 +2,8 @@ part of 'objects.dart';
 @JsonSerializable()
 class AddressModel{
   late String addressString;
-  late String latitude;
-  late String longitude;
+  late double latitude;
+  late double longitude;
 
   AddressModel({
     required this.addressString,

@@ -1,19 +1,19 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/auth_controller.dart';
+import 'package:oi/models/objects.dart';
 import 'package:oi/models/user_model.dart';
-import 'package:oi/screens/adress_screen/search_address2.dart';
-import 'package:oi/screens/home_screen/map_screen.dart';
 import 'package:oi/screens/login_screen/otp_screen.dart';
 import 'package:oi/screens/login_screen/sign_up.dart';
-import 'package:oi/screens/login_screen/successfull_login.dart';
 import 'package:oi/utils/util_funtions.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../screens/home_screen/map_screen2.dart';
 import '../../screens/login_screen/add_phone_number.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -41,6 +41,17 @@ class UserProvider extends ChangeNotifier {
 
   UserModel? get userModel => _userModel;
 
+  //address model
+  AddressModel _addressModel =
+      AddressModel(addressString: "", latitude: 0, longitude: 0);
+  //get address string;
+  String get address => _addressModel.addressString != ""
+      ? _addressModel.addressString
+      : "Your Locations";
+
+  double get getlattiude => _addressModel.latitude;
+  double get getlongitude => _addressModel.longitude;
+
   final _firstName = TextEditingController();
   final _lastName = TextEditingController();
   final _emailAddress = TextEditingController();
@@ -55,9 +66,9 @@ class UserProvider extends ChangeNotifier {
 
     if (phone_number != null) {
       await fetchSingleUser(context, phone_number);
-      UtilFuntions.navigateTo(context, MapSample());
+      UtilFuntions.navigateTo(context, MapSample2());
+
     } else {
-      
       UtilFuntions.navigateTo(context, AddPhoneNumber());
     }
   }
@@ -75,9 +86,7 @@ class UserProvider extends ChangeNotifier {
 
   void compareOtp(BuildContext context, String otp) {
     if (otp == userModel!.otp) {
-         UtilFuntions.pageTransition(
-              context, const SignUp(), const OTPScreen());
-     
+      UtilFuntions.pageTransition(context, const SignUp(), const OTPScreen());
     } else {
       AwesomeDialog(
         context: context,
@@ -100,9 +109,7 @@ class UserProvider extends ChangeNotifier {
       _lastName.text,
       _emailAddress.text,
     ))!;
-           UtilFuntions.pageTransition(
-              context,  MapSample(), const SignUp());
-
+    UtilFuntions.pageTransition(context, MapSample2(), const SignUp());
 
     Logger().d(_userModel.email);
 
@@ -124,10 +131,16 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> successLogout(BuildContext context) async {
     try {
-       UtilFuntions.pageTransition(
-              context, const AddPhoneNumber(),  MapSample());
-     
+      //  UtilFuntions.pageTransition(
+      //         context, const AddPhoneNumber(),  MapSample());
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => AddPhoneNumber()),
+      );
+
       // notifyListeners();
+
     } catch (e) {
       Logger().e(e);
     }
@@ -136,9 +149,8 @@ class UserProvider extends ChangeNotifier {
   Future<void> successLogin(
       BuildContext context, String uid, String value) async {
     try {
-      UtilFuntions.pageTransition(
-              context,  MapSample(), const SignUp());
-     
+      UtilFuntions.pageTransition(context, MapSample2(), const SignUp());
+
       UserModel userModel = (await AuthController().updateUser(
         context,
         uid,
@@ -172,6 +184,20 @@ class UserProvider extends ChangeNotifier {
     await FacebookAuth.i.logOut();
     userData = null;
     successLogout(context);
+    notifyListeners();
+  }
+
+  
+
+  //set user location geocoding result
+  void setAddressGeo(GeocodingResponse response) {
+
+    _addressModel.addressString = response.results[0].formattedAddress!;
+    _addressModel.latitude = response.results[0].geometry.location.lat;
+    _addressModel.longitude = response.results[0].geometry.location.lng;
+
+
+
     notifyListeners();
   }
 }

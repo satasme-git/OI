@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../screens/home_screen/map_screen.dart';
+import '../../screens/home_screen/map_screen2.dart';
 import '../../screens/login_screen/otp_screen.dart';
 
 class OTPProvider extends ChangeNotifier {
@@ -182,7 +183,7 @@ class OTPProvider extends ChangeNotifier {
                 context, const SignUp(), const OTPScreen());
           } else {
             UtilFuntions.pageTransition(
-                context,  MapSample(), const OTPScreen());
+                context,  MapSample2(), const OTPScreen());
           }
 
           Provider.of<TimerProvider>(context, listen: false).stopTimer();

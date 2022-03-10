@@ -7,6 +7,7 @@ import 'package:oi/screens/adress_screen/search_address2.dart';
 import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth/otp_provider.dart';
+import 'providers/map/location_provider.dart';
 import 'screens/home_screen/map_screen.dart';
 import 'screens/splash_screen/splash_screen.dart';
 
@@ -27,7 +28,11 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => TimerProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LocationProvider(),
         )
+        
       ],
       child: const MyApp(),
     ),

@@ -33,7 +33,7 @@ class PlaceApi {
           "input": input,
           "key": apiKey,
           "language": "es-ES",
-          "types": "address",
+          "types": "establishment",
           "components": "country:LK"
         },
       );

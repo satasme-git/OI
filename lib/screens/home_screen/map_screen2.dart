@@ -1,89 +1,110 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
-import 'package:oi/screens/adress_screen/select_adresses.dart';
-import 'package:oi/utils/app_colors.dart';
-import 'package:oi/utils/util_funtions.dart';
+import 'package:oi/screens/home_screen/place_to_marker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
+
 import '../../providers/auth/user_provider.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/util_funtions.dart';
 import '../adress_screen/search_address2.dart';
 
-class MapSample extends StatefulWidget {
+class MapSample2 extends StatefulWidget {
   @override
-  State<MapSample> createState() => MapSampleState();
+  State<MapSample2> createState() => MapSample2State();
 }
 
-class MapSampleState extends State<MapSample> {
+class MapSample2State extends State<MapSample2> {
+  final Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController? controller;
   bool isSignupScreen = false;
+  bool myLocation = false;
+  double currentLatitude = 0.0;
+
+  late var originIcon = null;
+
+  bool _isNight_map = false;
+
+  static const CameraPosition _locationColombo = CameraPosition(
+    target: LatLng(6.927079, 79.861244),
+    bearing: 92.8334901395799,
+    zoom: 16,
+  );
+
   void isSignUp(bool val) {
     setState(() {
       isSignupScreen = val;
     });
   }
 
-  final Completer<GoogleMapController> _controller = Completer();
+  @override
+  void initState() {
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(6.927079, 79.861244),
-    zoom: 16,
-  );
-
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
-  late GoogleMapController newGooleMapController;
-
-  late Position currentPosition;
-  var geoLocator = Geolocator();
-
-  void locatePosition() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    currentPosition = position;
-    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-    CameraPosition cameraPosition =
-        new CameraPosition(target: latLngPosition, zoom: 14);
-    newGooleMapController
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    setState(() {
+      myLocation = false;
+    });
+    super.initState();
   }
-@override
+
+  // Future<void> mapLoad() async {
+  //   student = {
+  //     '1': const Marker(
+  //       markerId: MarkerId("0"),
+  //       position: LatLng(6.927079, 79.861244),
+  //       anchor: Offset(0.5, 1.2),
+  //     ),
+  //     '2': const Marker(
+  //       markerId: MarkerId("1"),
+  //       position: LatLng(6.927079, 74.861244),
+  //       anchor: Offset(0.5, 1.2),
+  //     ),
+  //     '3': const Marker(
+  //       markerId: MarkerId("2"),
+  //       position: LatLng(6.827079, 74.861244),
+  //       anchor: Offset(0.5, 1.2),
+  //     ),
+  //   };
+  //   originIcon = await placeToMarker();
+  // }
+
+  @override
   void dispose() {
     _disposeController();
     super.dispose();
   }
 
-  Future<void> _disposeController() async{
-    final GoogleMapController controller = await _controller.future;
-    controller.dispose();
+  Future<void> _disposeController() async {
+    controller = await _controller.future;
+    controller!.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    //  if(clock_val>)
     final size = MediaQuery.of(context).size;
 
-    List<String> myList = ['US', 'SG', 'US'];
-    print("##############################");
-    print(myList.where((item) => item.contains("US")));
+    DateFormat dateFormat = new DateFormat.Hm();
+    DateTime now = DateTime.now();
+    now = DateTime.parse(now.toString());
+    final start = DateTime(now.year, now.month, now.day, 19);
+    final stop = DateTime(now.year, now.month, now.day, 06);
+
+    if (now.isAfter(start) && now.isBefore(stop)) {
+      _isNight_map = false;
+    } else if (!now.isAfter(start) && !now.isBefore(stop)) {
+      _isNight_map = true;
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
-
       appBar: AppBar(
-        // title: new Text(
-        //   "Hello World",
-        //   style: TextStyle(color: Colors.amber),
-        // ),
-
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: Padding(
@@ -200,43 +221,50 @@ class MapSampleState extends State<MapSample> {
           ],
         ),
       ),
-     
       body: Stack(
         children: [
           Container(
             height: size.height,
             width: size.width,
-            child:
-                MapWidget(kGooglePlex: _kGooglePlex, controller: _controller),
-          ),
+            child: Consumer2<LocationProvider, UserProvider>(
+              builder: (context, values, values2, child) {
+                return GoogleMap(
+                  myLocationButtonEnabled: false,
+                  compassEnabled: false,
+                  mapToolbarEnabled: false,
+                  myLocationEnabled: myLocation,
+                  mapType: MapType.normal,
+                  zoomControlsEnabled: false,
+                  zoomGesturesEnabled: true,
+                  initialCameraPosition: _locationColombo,
+                  onMapCreated: (controller) async {
+                    _controller.complete(controller);
 
-          // Positioned(
-          //   top: 40,
-          //   child: InkWell(
-          //     onTap: () {},
-          //     child: Container(
-          //       height: 40,
-          //       width: 40,
-          //       decoration: BoxDecoration(
-          //           borderRadius: BorderRadius.circular(10),
-          //           color: Colors.white),
-          //       child: Icon(
-          //         MaterialCommunityIcons.sort_variant,
-          //         color: Colors.black,
-          //       ),
-          //     ),
-          //   ),
-          // ),
+                    String value = _isNight_map
+                        ? await DefaultAssetBundle.of(context)
+                            .loadString('assets/map_styles/map_style.json')
+                        : await DefaultAssetBundle.of(context).loadString(
+                            'assets/map_styles/map_style_night.json');
+
+                    controller.setMapStyle(value);
+                    _goToTheLake(values.getPick?.position?.latitude, values.getPick?.position?.longitude);
+                    // values.getCurentLocationisSet != 0.0
+                    //     ? _goToTheLake(
+                    //         values2.getlattiude, values2.getlongitude)
+                    //     : _locationColombo;
+                  },
+                  markers: values.markers.values.toSet(),
+                );
+              },
+            ),
+          ),
           AnimatedPositioned(
             duration: Duration(milliseconds: 700),
             curve: Curves.easeInOutBack,
             bottom: isSignupScreen ? 250 : 200,
             right: 20,
             child: InkWell(
-              onTap: () async {
-                newGooleMapController = await _controller.future;
-                locatePosition();
-              },
+              onTap: () {},
               child: Container(
                 height: 30,
                 width: 30,
@@ -398,11 +426,6 @@ class MapSampleState extends State<MapSample> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _goToTheLake,
-      //   label: Text('To the lake!'),
-      //   icon: Icon(Icons.directions_boat),
-      // ),
     );
   }
 
@@ -419,161 +442,6 @@ class MapSampleState extends State<MapSample> {
           //     MaterialCommunityIcons.lock_outline, "*********", false, false),
         ],
       ),
-    );
-  }
-
-  Row commonTextField(String dropText) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Container(
-          margin: isSignupScreen
-              ? EdgeInsets.only(bottom: 0)
-              : EdgeInsets.only(bottom: 10),
-          width: 65,
-          // height: 50,
-          // color: Colors.amber,
-          child: Column(
-            children: [
-              Text(
-                "Pickup",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
-              ),
-              Container(
-                height: 6,
-                width: 6,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              SizedBox(
-                height: 1,
-              ),
-              Container(
-                height: 20,
-                width: 0.5,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(
-                height: 1,
-              ),
-              Container(
-                height: 6,
-                width: 6,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                dropText,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.amber[800],
-                ),
-              ),
-              if (isSignupScreen)
-                Column(
-                  children: [
-                    Container(
-                      height: 6,
-                      width: 6,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    Container(
-                      height: 5,
-                      width: 0.5,
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Container(
-            // width: 20,
-            // height: 30,
-            // color: Colors.red,
-            child: Column(
-              children: [
-                Consumer<UserProvider>(
-                  builder: (context, value, child) {
-                    return Container(
-                      height: 40,
-                      color: Colors.grey[50],
-                      child: TextField(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      SearchAddress2()));
-
-                          // UtilFuntions.pageTransition(
-                          //     context, SearchAddress2(), MapSample());
-                        },
-                        // enabled: false, //Not clickable and not editable
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintStyle: TextStyle(fontSize: 17),
-                          hintText: value.address != ""
-                              ? value.address
-                              : 'Your Location',
-                          suffixIcon: const Align(
-                            widthFactor: 1.0,
-                            heightFactor: 1.0,
-                            child: Icon(MaterialCommunityIcons.heart_outline),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(5),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Container(
-                  height: 40,
-                  color: Colors.grey[50],
-                  child: TextField(
-                    onTap: () {
-                      UtilFuntions.pageTransition(
-                          context, SearchAddress2(), MapSample());
-                    },
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      hintStyle: TextStyle(fontSize: 17),
-                      hintText: 'Where are you going',
-                      suffixIcon: Align(
-                        widthFactor: 1.0,
-                        heightFactor: 1.0,
-                        child: Icon(MaterialCommunityIcons.plus),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(5),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        )
-      ],
     );
   }
 
@@ -659,126 +527,198 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  Widget buildTextField(
-      IconData icon, String hintText, bool isPassword, bool isEmail) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: TextField(
-        obscureText: isPassword,
-        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: iconColor,
+  Row commonTextField(String dropText) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          margin: isSignupScreen
+              ? EdgeInsets.only(bottom: 0)
+              : EdgeInsets.only(bottom: 10),
+          width: 65,
+          // height: 50,
+          // color: Colors.amber,
+          child: Column(
+            children: [
+              const Text(
+                "Pickup",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              Container(
+                height: 6,
+                width: 6,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              const SizedBox(
+                height: 1,
+              ),
+              Container(
+                height: 20,
+                width: 0.5,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                height: 1,
+              ),
+              Container(
+                height: 6,
+                width: 6,
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                dropText,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber[800],
+                ),
+              ),
+              if (isSignupScreen)
+                Column(
+                  children: [
+                    Container(
+                      height: 6,
+                      width: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    Container(
+                      height: 5,
+                      width: 0.5,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
           ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: textColor1),
-            borderRadius: BorderRadius.all(
-              Radius.circular(35.0),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: textColor1),
-            borderRadius: BorderRadius.all(
-              Radius.circular(35.0),
-            ),
-          ),
-          contentPadding: EdgeInsets.all(10),
-          hintText: hintText,
-          hintStyle: TextStyle(fontSize: 14, color: textColor1),
         ),
-      ),
+        Expanded(
+          child: Container(
+              // width: 20,
+              // height: 30,
+              // color: Colors.red,
+              child: Consumer2<UserProvider, LocationProvider>(
+            builder: (context, value, value2, child) {
+              return Column(
+                children: [
+                  Container(
+                    height: 40,
+                    color: Colors.grey[50],
+                    child: TextField(
+                      onTap: () {
+                        setState(() {
+                          myLocation = false;
+                        });
+                        Logger().i(value2.getPick?.address.toString(),">>>>>>>>>>>>>>>>>>>>>>>>>>>> : : : : ");
+                        value2.setFocus("pick");
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    SearchAddress2()));
+
+                        // UtilFuntions.pageTransition(
+                        //     context, SearchAddress2(), MapSample());
+                      },
+                      // enabled: false, //Not clickable and not editable
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        hintStyle: TextStyle(fontSize: 17),
+                        hintText: value2.getPick?.address != null
+                            ? value2.getPick?.address
+                            : 'Your Location',
+                        suffixIcon: const Align(
+                          widthFactor: 1.0,
+                          heightFactor: 1.0,
+                          child: Icon(MaterialCommunityIcons.heart_outline),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                    height: 40,
+                    color: Colors.grey[50],
+                    child: TextField(
+                      onTap: () {
+                        setState(() {
+                          myLocation = false;
+                        });
+
+                        
+
+
+                        value2.setFocus("drop");
+                        UtilFuntions.pageTransition(
+                            context, SearchAddress2(), MapSample2());
+                      },
+                      readOnly: true,
+                      decoration: const InputDecoration(
+                        hintStyle: TextStyle(fontSize: 17),
+                        hintText: 'Where are you going',
+                        suffixIcon: Align(
+                          widthFactor: 1.0,
+                          heightFactor: 1.0,
+                          child: Icon(MaterialCommunityIcons.plus),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(5),
+                      ),
+                    ),
+                  )
+                ],
+              );
+            },
+          )),
+        )
+      ],
     );
   }
 
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
-}
-
-class MapWidget extends StatelessWidget {
-  bool _mapLoading = true;
-  MapWidget({
-    Key? key,
-    required CameraPosition kGooglePlex,
-    required Completer<GoogleMapController> controller,
-  })  : _kGooglePlex = kGooglePlex,
-        _controller = controller,
-        super(key: key);
-
-  final CameraPosition _kGooglePlex;
-  final Completer<GoogleMapController> _controller;
-
-  late GoogleMapController newGooleMapController;
-
-  late Position currentPosition;
-  var geoLocator = Geolocator();
-
-  void locatePosition(lat, long) async {
+  Future<void> _goToTheLake(lat, long) async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
 
     Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    currentPosition = position;
-    LatLng latLngPosition = LatLng(lat != 0 ? lat : position.latitude,
-        long != 0 ? long : position.longitude);
-    CameraPosition cameraPosition =
-        new CameraPosition(target: latLngPosition, zoom: 14);
-    newGooleMapController
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-  }
-
- 
-
-  @override
-  Widget build(BuildContext context) {
-    bool _isNight_map = false;
-    bool isMapVisible = false;
-
-    DateFormat dateFormat = new DateFormat.Hm();
-    DateTime now = DateTime.now();
-    now = DateTime.parse(now.toString());
-    final start = DateTime(now.year, now.month, now.day, 19);
-    final stop = DateTime(now.year, now.month, now.day, 06);
-
-    if (now.isAfter(start) && now.isBefore(stop)) {
-      _isNight_map = false;
-    } else if (!now.isAfter(start) && !now.isBefore(stop)) {
-      _isNight_map = true;
-    }
-
-    var size = MediaQuery.of(context).size;
-    return Consumer2<UserProvider,LocationProvider>(
-      builder: (context, values,values2, child) {
-        return GoogleMap(
-          myLocationButtonEnabled: false,
-          compassEnabled: false,
-          mapToolbarEnabled: false,
-          // liteModeEnabled: true,
-          myLocationEnabled: true,
-          mapType: MapType.normal,
-          zoomControlsEnabled: false,
-          zoomGesturesEnabled: true,
-          initialCameraPosition: _kGooglePlex,
-          onMapCreated: (GoogleMapController controller) async {
-            _controller.complete(controller);
-            newGooleMapController = controller;
-            String value = _isNight_map
-                ? await DefaultAssetBundle.of(context)
-                    .loadString('assets/map_styles/map_style.json')
-                : await DefaultAssetBundle.of(context)
-                    .loadString('assets/map_styles/map_style_night.json');
-            newGooleMapController.setMapStyle(value);
-            locatePosition(values.getlattiude, values.getlongitude);
-          },
-          markers: values2.marker.values.toSet(),
-        );
-      },
+      desiredAccuracy: LocationAccuracy.high,
     );
+    // currentLatitude = position.latitude;
+
+    LatLng latLngPosition = LatLng(
+      lat != null ? lat : position.latitude,
+      long != null ? long : position.longitude,
+    );
+    CameraPosition cameraPosition = CameraPosition(
+      // bearing: 92.8334901395799,
+      target: latLngPosition,
+      // tilt: 59.440717697143555,
+      zoom: 14.151926040649414,
+    );
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    Provider.of<LocationProvider>(context, listen: false)
+        .setLatitude(position.latitude);
   }
 }
 

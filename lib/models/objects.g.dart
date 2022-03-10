@@ -8,8 +8,8 @@ part of objects;
 
 AddressModel _$AddressModelFromJson(Map<String, dynamic> json) => AddressModel(
       addressString: json['addressString'] as String,
-      latitude: json['latitude'] as String,
-      longitude: json['longitude'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$AddressModelToJson(AddressModel instance) =>
