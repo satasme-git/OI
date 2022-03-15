@@ -1,92 +1,84 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+class CustomPin extends CustomPainter {
 
+  CustomPin();
 
-
-class CustomPin extends ConsumerWidget {
-  final double mapPadding, height;
-  const CustomPin({
-    Key? key,
-    required this.mapPadding,
-    required this.height,
-  }) : super(key: key);
-  @override
-  Widget build(BuildContext context, ref) {
-    final pickFromMap = ref.select(
-      homeProvider.select((_) => _.pickFromMap),
-    );
-
-    if (pickFromMap == null) {
-      return Container();
-    }
-
-    final place = pickFromMap.place;
-    final dragging = pickFromMap.dragging;
-
-    return Positioned(
-      top: 0.5 * (height + mapPadding) - 25,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.translate(
-            offset: const Offset(0, -25),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      alignment: Alignment.center,
-                      child: place != null && !dragging
-                          ? ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 250,
-                              ),
-                              child: Text(
-                                place.title,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          : dragging
-                              ? const SpinKitCircle(
-                                  color: Colors.white,
-                                  size: 24,
-                                )
-                              : const SizedBox(width: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 2,
-                  height: 10,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ],
+  void _drawText({
+    required Canvas canvas,
+    required Size size,
+    required String text,
+    required double width,
+    double? dx,
+    double? dy,
+    String? fontFamily,
+    double fontSize = 22,
+    Color color = Colors.black,
+    FontWeight? fontWeight,
+  }) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontFamily: fontFamily,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       ),
+      textDirection: TextDirection.ltr,
+      maxLines: 2,
     );
+
+   
+
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint();
+    paint.color = Colors.grey;
+
+    final rRect = RRect.fromLTRBR(
+      30,
+      0,
+      25,
+      100,
+      const Radius.circular(0),
+    );
+
+    canvas.drawRRect(rRect, paint);
+
+    paint.color = Colors.black;
+
+    final miniRect = RRect.fromLTRBAndCorners(
+      0,
+      0,
+      57,
+      57,
+      topLeft: const Radius.circular(30),
+      bottomLeft: const Radius.circular(30),
+      topRight: const Radius.circular(30),
+      bottomRight : const Radius.circular(30),
+    );
+
+    canvas.drawRRect(miniRect, paint);
+
+    _drawText(
+      canvas: canvas,
+      size: size,
+      text: "b",
+      dx: size.height + 10,
+      width: size.width - size.height - 10,
+    );
+
+    
+     
+    
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }

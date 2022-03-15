@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:oi/providers/auth/sign_up_provider.dart';
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
-import 'package:oi/screens/adress_screen/search_address2.dart';
-import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth/otp_provider.dart';
 import 'providers/map/location_provider.dart';
-import 'screens/home_screen/map_screen.dart';
 import 'screens/splash_screen/splash_screen.dart';
 
 Future<void> main() async {

@@ -11,6 +11,7 @@ import 'package:oi/screens/home_screen/place_to_marker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../controller/location_controller.dart';
 import '../../providers/auth/user_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/util_funtions.dart';
@@ -23,12 +24,14 @@ class MapSample2 extends StatefulWidget {
 
 class MapSample2State extends State<MapSample2> {
   final Completer<GoogleMapController> _controller = Completer();
+  final LocationController _locationController = LocationController();
   GoogleMapController? controller;
   bool isSignupScreen = false;
   bool myLocation = false;
   double currentLatitude = 0.0;
+  BitmapDescriptor? sourceIcon;
 
-  late var originIcon = null;
+  var originIcon;
 
   bool _isNight_map = false;
 
@@ -46,33 +49,23 @@ class MapSample2State extends State<MapSample2> {
 
   @override
   void initState() {
-
+    this.setSourceAndDestinationmarkerIcons();
     setState(() {
-      myLocation = false;
+      myLocation = true;
     });
     super.initState();
   }
 
-  // Future<void> mapLoad() async {
-  //   student = {
-  //     '1': const Marker(
-  //       markerId: MarkerId("0"),
-  //       position: LatLng(6.927079, 79.861244),
-  //       anchor: Offset(0.5, 1.2),
-  //     ),
-  //     '2': const Marker(
-  //       markerId: MarkerId("1"),
-  //       position: LatLng(6.927079, 74.861244),
-  //       anchor: Offset(0.5, 1.2),
-  //     ),
-  //     '3': const Marker(
-  //       markerId: MarkerId("2"),
-  //       position: LatLng(6.827079, 74.861244),
-  //       anchor: Offset(0.5, 1.2),
-  //     ),
-  //   };
-  //   originIcon = await placeToMarker();
-  // }
+  void setSourceAndDestinationmarkerIcons() async {
+    sourceIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(devicePixelRatio: 2.0),
+      'assets/images/google.png',
+    );
+  }
+
+  Future<void> mapLoad() async {
+    originIcon = await customPin();
+  }
 
   @override
   void dispose() {
@@ -104,32 +97,7 @@ class MapSample2State extends State<MapSample2> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-            height: 5,
-            width: 5,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white),
-            child: Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                  icon: const Icon(MaterialCommunityIcons.sort_variant),
-                  color: Colors.black,
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                );
-              },
-            ),
-          ),
-        ),
-      ),
+      appBar: _appBar(),
       drawer: Drawer(
         child: ListView(
           children: [
@@ -247,13 +215,26 @@ class MapSample2State extends State<MapSample2> {
                             'assets/map_styles/map_style_night.json');
 
                     controller.setMapStyle(value);
-                    _goToTheLake(values.getPick?.position?.latitude, values.getPick?.position?.longitude);
+                    values.setFocus("pick");
+
+                    _goToTheLake(values.getPick?.position?.latitude,
+                        values.getPick?.position?.longitude);
                     // values.getCurentLocationisSet != 0.0
                     //     ? _goToTheLake(
                     //         values2.getlattiude, values2.getlongitude)
                     //     : _locationColombo;
                   },
-                  markers: values.markers.values.toSet(),
+                  markers: values.markerOrigin.values.toSet(),
+
+                  //  markers: {
+                  //            Marker(
+                  //             markerId: MarkerId("0"),
+                  //             position: LatLng(6.927079, 79.861244),
+                  //               icon:originIcon,
+                  //             anchor: Offset(0.5, 1.2),
+
+                  //           ),
+                  //         }
                 );
               },
             ),
@@ -425,6 +406,35 @@ class MapSample2State extends State<MapSample2> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+      leading: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Container(
+          height: 5,
+          width: 5,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10), color: Colors.white),
+          child: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(MaterialCommunityIcons.sort_variant),
+                color: Colors.black,
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip:
+                    MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -624,7 +634,8 @@ class MapSample2State extends State<MapSample2> {
                         setState(() {
                           myLocation = false;
                         });
-                        Logger().i(value2.getPick?.address.toString(),">>>>>>>>>>>>>>>>>>>>>>>>>>>> : : : : ");
+                        Logger().i(value2.getPick?.address.toString(),
+                            ">>>>>>>>>>>>>>>>>>>>>>>>>>>> : : : :  2 ");
                         value2.setFocus("pick");
                         Navigator.push(
                             context,
@@ -664,12 +675,15 @@ class MapSample2State extends State<MapSample2> {
                           myLocation = false;
                         });
 
-                        
-
-
                         value2.setFocus("drop");
-                        UtilFuntions.pageTransition(
-                            context, SearchAddress2(), MapSample2());
+                        // UtilFuntions.pageTransition(
+                        //     context, SearchAddress2(), MapSample2());
+                         Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    SearchAddress2()));
+
                       },
                       readOnly: true,
                       decoration: const InputDecoration(
@@ -719,6 +733,9 @@ class MapSample2State extends State<MapSample2> {
     controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     Provider.of<LocationProvider>(context, listen: false)
         .setLatitude(position.latitude);
+
+    Provider.of<LocationProvider>(context, listen: false)
+        .currentLocationAddPlace(latLngPosition);
   }
 }
 

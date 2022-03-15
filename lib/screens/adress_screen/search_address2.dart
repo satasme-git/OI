@@ -13,6 +13,7 @@ import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 
 import '../home_screen/map_screen2.dart';
+import '../home_screen/vehicle_select_map/vehicle_map.dart';
 
 class SearchAddress2 extends StatefulWidget {
   const SearchAddress2({Key? key}) : super(key: key);
@@ -205,20 +206,30 @@ class _SearchAddress2State extends State<SearchAddress2> {
                                           apiKey: GlobalData
                                               .API_key, // Put YOUR OWN KEY here. Should be the same for android and ios
                                           onPlacePicked: (result) {
-                                            Logger().i(result.formattedAddress);
-                                            value.startAddPlace(result);
+                                       
 
-                                            if(value.pickLocationfocus=="pick"){
-
+                                            if (value.pickLocationfocus ==
+                                                "pick") {
+                                              value.startAddPlace(result);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        MapSample2()),
+                                              );
+                                            } else if (value
+                                                    .pickLocationfocus ==
+                                                "drop") {
+                                              value.startAddPlace(result);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        VehicleMap()),
+                                              );
                                             }
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          MapSample2()),
-                                            );
-                                          
                                           },
                                           initialPosition: const LatLng(
                                               37.42796133580664,

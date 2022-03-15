@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "828395746725-6o8ft3q6878n7psql7ojn0ufgjeo6cii.apps.googleusercontent.com",
+          "client_id": "828395746725-j45m5cod1q390ube2mcfp6o5ap6ocdbl.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.satasme.oi",
-            "certificate_hash": "137a080f7afe443861b2d69ee5441fdd67aa3b52"
+            "certificate_hash": "e6b9f34a34144b048f76f0b90bb1dbec4f25be31"
           }
         },
         {

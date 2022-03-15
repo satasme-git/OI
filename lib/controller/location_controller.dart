@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
+import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_pin.dart';
 
 import '../models/place_model.dart';
 import '../screens/home_screen/place_to_marker.dart';
@@ -22,10 +24,15 @@ class LocationController {
     String markerId = "";
     if (val == "pick") {
       markerId = val;
-       originIcon = await placeToMarker(place);
+      originIcon = await  placeToMarker(place);
+      Logger().i("~~~~~~~~~~~~~~~~~~~~~ 1 : " + markerId);
+      
     } else if (val == "drop") {
-       originIcon = await placeToMarker(place);
+      originIcon = await placeToMarker(place);
       markerId = val;
+      Logger().i("******************** 2 : " + markerId);
+
+      
     }
     marker[markerId] = Marker(
       markerId: MarkerId(markerId),
