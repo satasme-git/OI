@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../providers/auth/user_provider.dart';
 import '../../../providers/map/location_provider.dart';
+import '../../../utils/fit_map.dart';
 
 class VehicleMap extends StatefulWidget {
   const VehicleMap({Key? key}) : super(key: key);
@@ -46,6 +47,7 @@ class _VehicleMapState extends State<VehicleMap> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     DateFormat dateFormat = new DateFormat.Hm();
     DateTime now = DateTime.now();
     now = DateTime.parse(now.toString());
@@ -152,49 +154,74 @@ class _VehicleMapState extends State<VehicleMap> {
           ],
         ),
       ),
-      body: Stack(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            child: Consumer2<LocationProvider, UserProvider>(
-              builder: (context, values, values2, child) {
-                return GoogleMap(
-                  myLocationButtonEnabled: false,
-                  compassEnabled: false,
-                  mapToolbarEnabled: false,
-                  myLocationEnabled: myLocation,
-                  mapType: MapType.normal,
-                  zoomControlsEnabled: false,
-                  zoomGesturesEnabled: true,
-                  initialCameraPosition: _locationColombo,
-                  onMapCreated: (controller) async {
-                    _controller.complete(controller);
+            height: size.height / 1.5,
+            width: size.width,
+            child: Stack(
+              children: [
+                Container(
+                  child: Consumer2<LocationProvider, UserProvider>(
+                    builder: (context, values, values2, child) {
+                      return GoogleMap(
+                        myLocationButtonEnabled: false,
+                        compassEnabled: false,
+                        mapToolbarEnabled: false,
+                        myLocationEnabled: myLocation,
+                        mapType: MapType.normal,
+                        zoomControlsEnabled: false,
+                        zoomGesturesEnabled: true,
+                        initialCameraPosition: _locationColombo,
+                        onMapCreated: (controller) async {
+                          _controller.complete(controller);
 
-                    String value = _isNight_map
-                        ? await DefaultAssetBundle.of(context)
-                            .loadString('assets/map_styles/map_style.json')
-                        : await DefaultAssetBundle.of(context).loadString(
-                            'assets/map_styles/map_style_night.json');
+                          String value = _isNight_map
+                              ? await DefaultAssetBundle.of(context).loadString(
+                                  'assets/map_styles/map_style.json')
+                              : await DefaultAssetBundle.of(context).loadString(
+                                  'assets/map_styles/map_style_night.json');
 
-                    controller.setMapStyle(value);
+                          controller.setMapStyle(value);
 
-                    // values.setFocus("pick");
-                              _goToTheLake(values.getPick?.position?.latitude,
-                        values.getPick?.position?.longitude);
-                         Logger().i("@@@@@@@@@@@@@@  : "+values.markers.values.toString());
-                  },
-                  markers: values.markers.values.toSet(),
-                  
-                );
-              },
+                          // values.setFocus("pick");
+                          _goToTheLake(values.getPick?.position?.latitude,
+                              values.getPick?.position?.longitude);
+                          Logger().i("@@@@@@@@@@@@@@  : " +
+                              values.markers.values.toString());
+                          Logger().i("!!!!!!!!!!!!!!!!  : " +
+                              values.polylines.values.toString());
+                        },
+                        markers: values.markers.values.toSet(),
+                        // polylines: values.polylines.values.toSet(),
+                        polylines: values.getPolyline,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-         
+          Expanded(
+            
+              child: Container(
+                
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            width: size.width,
+          )),
         ],
       ),
     );
   }
 
-    Future<void> _goToTheLake(lat, long) async {
+  Future<void> _goToTheLake(lat, long) async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -216,12 +243,16 @@ class _VehicleMapState extends State<VehicleMap> {
       zoom: 14.151926040649414,
     );
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    // controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
     Provider.of<LocationProvider>(context, listen: false)
         .setLatitude(position.latitude);
 
     Provider.of<LocationProvider>(context, listen: false)
         .currentLocationAddPlace(latLngPosition);
+    Provider.of<LocationProvider>(context, listen: false)
+        .getPolyLine(controller);
   }
 
   AppBar _appBar() {

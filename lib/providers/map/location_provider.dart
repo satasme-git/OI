@@ -1,14 +1,26 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/location_controller.dart';
 import '../../models/place_model.dart';
 import '../../screens/home_screen/place_to_marker.dart';
+import '../../utils/global_data.dart';
 
 class LocationProvider extends ChangeNotifier {
   Map<String, Marker> marker = {};
   Map<String, Marker> markerOrigin = {};
+
+  Map<PolylineId, Polyline> polylines = {};
+
+  Set<Polyline> _polylines = Set<Polyline>();
+  List<LatLng> polylineCoordinates = [];
+
+  Set<Polyline> get getPolyline => _polylines;
+  PolylinePoints polylinePoints = PolylinePoints();
+
   late Place _placeModel;
 
   Place? _pick;
@@ -65,7 +77,6 @@ class LocationProvider extends ChangeNotifier {
       anchor: Offset(0.5, 1.2),
     );
 
-
     notifyListeners();
   }
 
@@ -88,6 +99,19 @@ class LocationProvider extends ChangeNotifier {
       icon: originIcon,
       anchor: Offset(0.29, 1.2),
     );
+
+    notifyListeners();
+  }
+
+  Future<void> getPolyLine(GoogleMapController controller) async {
+    List<LatLng> polylineCoordinates = await _locationController.addPolyLines(controller);
+
+    _polylines.add(Polyline(
+        polylineId: PolylineId('polyline'),
+        width: 2,
+        color: Colors.orange.shade800,
+        
+        points: polylineCoordinates));
 
     notifyListeners();
   }

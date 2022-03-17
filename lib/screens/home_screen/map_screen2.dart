@@ -31,8 +31,6 @@ class MapSample2State extends State<MapSample2> {
   double currentLatitude = 0.0;
   BitmapDescriptor? sourceIcon;
 
-  var originIcon;
-
   bool _isNight_map = false;
 
   static const CameraPosition _locationColombo = CameraPosition(
@@ -49,22 +47,10 @@ class MapSample2State extends State<MapSample2> {
 
   @override
   void initState() {
-    this.setSourceAndDestinationmarkerIcons();
     setState(() {
       myLocation = true;
     });
     super.initState();
-  }
-
-  void setSourceAndDestinationmarkerIcons() async {
-    sourceIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(devicePixelRatio: 2.0),
-      'assets/images/google.png',
-    );
-  }
-
-  Future<void> mapLoad() async {
-    originIcon = await customPin();
   }
 
   @override
@@ -429,8 +415,7 @@ class MapSample2State extends State<MapSample2> {
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
-                tooltip:
-                    MaterialLocalizations.of(context).openAppDrawerTooltip,
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               );
             },
           ),
@@ -678,12 +663,11 @@ class MapSample2State extends State<MapSample2> {
                         value2.setFocus("drop");
                         // UtilFuntions.pageTransition(
                         //     context, SearchAddress2(), MapSample2());
-                         Navigator.push(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (BuildContext context) =>
                                     SearchAddress2()));
-
                       },
                       readOnly: true,
                       decoration: const InputDecoration(

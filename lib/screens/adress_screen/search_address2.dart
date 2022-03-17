@@ -94,11 +94,13 @@ class _SearchAddress2State extends State<SearchAddress2> {
         bottom: PreferredSize(
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                const EdgeInsets.only(left: 20.0,right: 5, top: 15.0,bottom:15),
             child: Column(
               children: [
                 AddressInput(
-                  iconData: Icons.gps_fixed,
+                  text:"Pick",
+                  textColor:  Colors.blueAccent,
+                  // iconData: Icons.gps_fixed,
                   hintText: "Enter pick location here",
                   enabled: false,
                 ),
@@ -109,7 +111,9 @@ class _SearchAddress2State extends State<SearchAddress2> {
                   children: [
                     AddressInput(
                       controller: _destinationController,
-                      iconData: Icons.place_sharp,
+                      // iconData: Icons.place_sharp,
+                      textColor:  Colors.amber[400]!,
+                      text:"Drop",
                       hintText: "Enter drop location here",
                       onChanged: this._inputOnChanged,
                       enabled: true,
@@ -317,31 +321,43 @@ class _SearchAddress2State extends State<SearchAddress2> {
 }
 
 class AddressInput extends StatelessWidget {
-  final IconData iconData;
+  // final IconData iconData;
   TextEditingController? controller;
   final String hintText;
   Function? onTap;
   final bool enabled;
   final void Function(String)? onChanged;
+  final String text;
+  final  Color textColor;
 
   AddressInput({
     Key? key,
-    required this.iconData,
+    // required this.iconData,
     this.controller,
     required this.hintText,
     this.onTap,
     required this.enabled,
     this.onChanged,
+    required this.text,
+    required this.textColor,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          this.iconData,
-          size: 18,
-          color: Colors.black,
-        ),
+        // Icon(
+        //   this.iconData,
+        //   size: 18,
+        //   color: Colors.black,
+        // ),
+         Text(
+                text,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color:textColor,
+                ),
+              ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Container(

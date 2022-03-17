@@ -44,9 +44,9 @@ dependencies:
   http: ^0.13.4
   provider: ^6.0.1
   logger: ^1.1.0
-  firebase_core: ^1.12.0
+  firebase_core: ^1.13.1
   firebase_auth: ^3.3.6
-  cloud_firestore: ^3.1.7
+  cloud_firestore: "^2.5.3"
   uuid: ^3.0.5
   awesome_dialog: ^2.1.1
   otp_autofill: ^2.1.0
@@ -64,7 +64,8 @@ dependencies:
   intl: ^0.17.0
   json_annotation: ^4.0.1
   google_maps_webservice: ^0.0.19
-  geoflutterfire: ^3.0.3
+  geoflutterfire: ^3.0.1
+  flutter_polyline_points: ^1.0.0
 
 dev_dependencies:
   flutter_test:
