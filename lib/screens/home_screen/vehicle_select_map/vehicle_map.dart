@@ -5,6 +5,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:oi/utils/constatnt.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -203,19 +205,16 @@ class _VehicleMapState extends State<VehicleMap> {
               ],
             ),
           ),
-          Expanded(
-            
-              child: Container(
-                
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                CustomCardTile(size: size),
+                CustomCardTile(size: size),
+                CustomCardTile(size: size),
+              ],
             ),
-            width: size.width,
-          )),
+          ),
         ],
       ),
     );
@@ -278,6 +277,104 @@ class _VehicleMapState extends State<VehicleMap> {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomCardTile extends StatelessWidget {
+  const CustomCardTile({
+    Key? key,
+    required this.size,
+  }) : super(key: key);
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        // margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        width: size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 125,
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 0.5,
+                ),
+              ),
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("IN 21 mins"),
+                    Image.asset(
+                      Constants.imageAsset('three-wheelers.jpg'),
+                      scale: 2.5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "Tuk",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Icon(
+                          MaterialCommunityIcons.account_outline,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        Text("2")
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: new Divider(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const Text(
+                      "LKR 176.37",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Row(
+                      children: const [
+                        Icon(
+                          MaterialCommunityIcons.star,
+                          color: Colors.amber,
+                        ),
+                        Text(
+                          "Earn 1.8 stars",
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class MyCustomMarker extends CustomPainter {
   final String label;
-  final int? duration;
+  // final int? duration;
+  final String textlbl;
 
   MyCustomMarker({
     required this.label,
-    required this.duration,
+    // required this.duration,
+    required this.textlbl,
   });
 
   void _drawText({
@@ -84,26 +86,27 @@ class MyCustomMarker extends CustomPainter {
       width: size.width - size.height - 10,
     );
 
-    if (duration == null) {
+    // if (duration == null) {
+    //   _drawText(
+    //     canvas: canvas,
+    //     size: size,
+    //     text: String.fromCharCode(
+    //       Icons.gps_fixed_rounded.codePoint,
+    //     ),
+    //     fontFamily: Icons.gps_fixed_rounded.fontFamily,
+    //     fontSize: 40,
+    //     color: Colors.white,
+    //     width: size.height,
+    //   );
+    // } else {
+      // final realDuration = Duration(seconds: duration!);
+      // final minutes = realDuration.inMinutes;
+      // final String durationAsText = "${minutes > 59 ? realDuration.inHours : minutes}";
       _drawText(
         canvas: canvas,
         size: size,
-        text: String.fromCharCode(
-          Icons.gps_fixed_rounded.codePoint,
-        ),
-        fontFamily: Icons.gps_fixed_rounded.fontFamily,
-        fontSize: 40,
-        color: Colors.white,
-        width: size.height,
-      );
-    } else {
-      final realDuration = Duration(seconds: duration!);
-      final minutes = realDuration.inMinutes;
-      final String durationAsText = "${minutes > 59 ? realDuration.inHours : minutes}";
-      _drawText(
-        canvas: canvas,
-        size: size,
-        text: durationAsText,
+        // text: durationAsText,
+        text: "",
         fontSize: 27,
         dy: -9,
         color: Colors.white,
@@ -114,14 +117,15 @@ class MyCustomMarker extends CustomPainter {
       _drawText(
         canvas: canvas,
         size: size,
-        text: minutes > 59 ? "H" : "MIN",
+        // text: minutes > 59 ? "H" : "MIN",
+        text: textlbl,
         fontSize: 22,
         dy: 12,
         color: Colors.white,
         width: size.height,
         fontWeight: FontWeight.bold,
       );
-    }
+    // }
   }
 
   @override

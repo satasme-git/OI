@@ -41,7 +41,7 @@ class LocationController {
     if (val == "pick") {
       markerId = val;
       dot = "pickdot";
-      originIcon = await placeToMarker(place);
+      originIcon = await placeToMarker(place,"Pick");
 
       _dotMarker = await getDotMarker();
 
@@ -60,7 +60,7 @@ class LocationController {
         anchor: const Offset(0.5, 0.5),
       );
 
-      originIcon = await placeToMarker(place);
+      originIcon = await placeToMarker(place,'Drop');
       markerId = val;
     }
     marker[markerId] = Marker(

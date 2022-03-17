@@ -7,14 +7,16 @@ import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_pin.dar
 import '../../models/place_model.dart';
 import 'custom_markers.dart';
 
-Future<BitmapDescriptor> placeToMarker(Place place) async {
+Future<BitmapDescriptor> placeToMarker(Place place,String textlbl) async {
   final recoder = ui.PictureRecorder();
   final canvas = ui.Canvas(recoder);
   const size = ui.Size(380, 100);
 
   final customMarker = MyCustomMarker(
     label: place.address!,
-    duration: 15,
+    // duration: 15,
+    textlbl:textlbl,
+    
   );
   customMarker.paint(canvas, size);
   final picture = recoder.endRecording();
