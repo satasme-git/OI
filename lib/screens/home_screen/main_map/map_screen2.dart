@@ -3,17 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
+import 'package:oi/screens/home_screen/main_map/widgets/circle_avatar.dart';
+import 'package:oi/utils/constatnt.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../controller/location_controller.dart';
-import '../../providers/auth/user_provider.dart';
-import '../../utils/app_colors.dart';
-import '../adress_screen/search_address2.dart';
+import '../../../componants/custom_text.dart';
+import '../../../controller/location_controller.dart';
+import '../../../providers/auth/user_provider.dart';
+import '../../../utils/app_colors.dart';
+import '../../adress_screen/search_address2.dart';
+import 'widgets/custom_listtile.dart';
 
 class MapSample2 extends StatefulWidget {
   @override
@@ -83,97 +89,194 @@ class MapSample2State extends State<MapSample2> {
       extendBodyBehindAppBar: true,
       appBar: _appBar(),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(
-                "User",
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-              accountEmail: Text(
-                "user@gmail.com",
-                style: TextStyle(color: Colors.grey[700]),
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              colors: [
+                Color.fromRGBO(244, 167, 41, 1),
+                Color.fromRGBO(254, 203, 48, 1),
+                // Colors.blue,
+                // Colors.purple,
+              ],
             ),
-            Center(
-              child: Consumer<UserProvider>(
-                builder: (context, value, child) {
-                  if (value.googlAaccount != null) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                            backgroundImage: Image.network(
-                                    value.googlAaccount!.photoUrl ?? '')
-                                .image,
-                            radius: 50),
-                        Text(value.googlAaccount!.displayName ?? ''),
-                        Text(value.googlAaccount!.email),
-                        ActionChip(
-                            avatar: Icon(Icons.logout),
-                            label: Text("logout"),
-                            onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.remove('phone_number');
-                              Provider.of<UserProvider>(context, listen: false)
-                                  .logOut(context);
-                            }),
-                      ],
-                    );
-                  } else if (value.userData != null) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(value.userData!["name"] ?? ''),
-                        Text(">>> : " + value.userData!["email"]),
-                        ActionChip(
-                            avatar: Icon(Icons.logout),
-                            label: Text("logout"),
-                            onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.remove('phone_number');
-                              Provider.of<UserProvider>(context, listen: false)
-                                  .logOutFb(context);
-                            }),
-                      ],
-                    );
-                  } else {
-                    return Consumer<UserProvider>(
-                      builder: (context, value, child) {
-                        return Center(
+          ),
+          // color: Color.fromRGBO(50,75,205,1),
+          child: ListView(
+            children: [
+              UserAccountsDrawerHeader(
+                accountEmail: Text(''),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                accountName: Consumer<UserProvider>(
+                  builder: (context, value, child) {
+                    return Row(
+                      children: <Widget>[
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(55),
+                            child: Image.asset(
+                              Constants.imageAsset(
+                                "profile.png",
+                              ),
+
+                              // width: 170.0,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, left: 20),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(value.getuserModel!.firstname.toString()),
-                              Text(value.getuserModel!.email.toString()),
-                              ActionChip(
-                                  avatar: Icon(Icons.logout),
-                                  label: Text("logout"),
-                                  onPressed: () async {
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
-                                    prefs.remove('phone_number');
-                                    Provider.of<UserProvider>(context,
-                                            listen: false)
-                                        .logOut(context);
-                                  }),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Chamil pathirana",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                "chamiljay88@gmail.com",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 8,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ],
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     );
-                  }
-                },
+                  },
+                ),
               ),
-            ),
-          ],
+              Center(
+                child: Consumer<UserProvider>(
+                  builder: (context, value, child) {
+                    if (value.googlAaccount != null) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                              backgroundImage: Image.network(
+                                      value.googlAaccount!.photoUrl ?? '')
+                                  .image,
+                              radius: 50),
+                          Text(value.googlAaccount!.displayName ?? ''),
+                          Text(value.googlAaccount!.email),
+                          ActionChip(
+                              avatar: Icon(Icons.logout),
+                              label: Text("logout"),
+                              onPressed: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.remove('phone_number');
+                                Provider.of<UserProvider>(context,
+                                        listen: false)
+                                    .logOut(context);
+                              }),
+                        ],
+                      );
+                    } else if (value.userData != null) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(value.userData!["name"] ?? ''),
+                          Text(">>> : " + value.userData!["email"]),
+                          ActionChip(
+                              avatar: Icon(Icons.logout),
+                              label: Text("logout"),
+                              onPressed: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.remove('phone_number');
+                                Provider.of<UserProvider>(context,
+                                        listen: false)
+                                    .logOutFb(context);
+                              }),
+                        ],
+                      );
+                    } else {
+                      return Consumer<UserProvider>(
+                        builder: (context, value, child) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(value.getuserModel!.firstname.toString()),
+                                Text(value.getuserModel!.email.toString()),
+                                ActionChip(
+                                    avatar: Icon(Icons.logout),
+                                    label: Text("logout"),
+                                    onPressed: () async {
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      prefs.remove('phone_number');
+                                      Provider.of<UserProvider>(context,
+                                              listen: false)
+                                          .logOut(context);
+                                    }),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              CustomListTile(
+                text: "Profile",
+                iconleading: MaterialCommunityIcons.account_outline,
+              ),
+              CustomListTile(
+                text: "My Trips",
+                iconleading: MaterialCommunityIcons.routes,
+              ),
+              CustomListTile(
+                text: "Payment",
+                iconleading: MaterialCommunityIcons.credit_card_outline
+              ),
+              CustomListTile(
+                text: "Notification",
+                iconleading: MaterialCommunityIcons.bell_outline
+              ),
+              CustomListTile(
+                text: "Helps",
+                iconleading: MaterialCommunityIcons.help_circle_outline
+              ),
+              CustomListTile(
+                text: "Free trips",
+                iconleading: MaterialCommunityIcons.gift_outline
+              ),
+              CustomListTile(
+                text: "Settings",
+                iconleading: MaterialCommunityIcons.cog_outline
+              ),
+
+              Divider(), //here is a divider
+
+              CustomListTile(
+                text: "Logout",
+                iconleading: MaterialCommunityIcons.power,
+                
+
+              ),
+
+            ],
+          ),
         ),
       ),
-      
       body: Stack(
         children: [
           Container(
@@ -203,7 +306,7 @@ class MapSample2State extends State<MapSample2> {
                     values.setFocus("pick");
 
                     _goToTheLake(values.getPick?.position?.latitude,
-                        values.getPick?.position?.longitude,values.getPick);
+                        values.getPick?.position?.longitude, values.getPick);
                     // values.getCurentLocationisSet != 0.0
                     //     ? _goToTheLake(
                     //         values2.getlattiude, values2.getlongitude)
@@ -618,7 +721,7 @@ class MapSample2State extends State<MapSample2> {
                         setState(() {
                           myLocation = false;
                         });
-                       
+
                         value2.setFocus("pick");
                         Navigator.push(
                             context,
@@ -690,9 +793,8 @@ class MapSample2State extends State<MapSample2> {
     );
   }
 
-  Future<void> _goToTheLake(lat, long,getPick) async {
-
-    Logger().e(getPick!=null?getPick?.address.toString():"asasas");
+  Future<void> _goToTheLake(lat, long, getPick) async {
+    Logger().e(getPick != null ? getPick?.address.toString() : "asasas");
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {

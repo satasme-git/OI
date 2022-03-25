@@ -9,7 +9,7 @@ import 'package:oi/models/objects.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/place_model.dart';
-import '../../screens/home_screen/place_to_marker.dart';
+import '../../screens/home_screen/vehicle_select_map/widgets/place_to_marker.dart';
 import '../../utils/global_data.dart';
 import '../auth/user_provider.dart';
 

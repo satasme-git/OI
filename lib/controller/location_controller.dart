@@ -4,8 +4,9 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
 import '../models/place_model.dart';
-import '../screens/home_screen/circle_marker.dart';
-import '../screens/home_screen/place_to_marker.dart';
+
+import '../screens/home_screen/vehicle_select_map/widgets/circle_marker.dart';
+import '../screens/home_screen/vehicle_select_map/widgets/place_to_marker.dart';
 import '../utils/fit_map.dart';
 import '../utils/global_data.dart';
 

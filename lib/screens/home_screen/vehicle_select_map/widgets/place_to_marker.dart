@@ -1,8 +1,9 @@
 import 'dart:ui' as ui;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_pin.dart';
-import '../../models/place_model.dart';
+import '../../../../models/place_model.dart';
 import 'custom_markers.dart';
+
 
 Future<BitmapDescriptor> placeToMarker(Place place,String textlbl) async {
   final recoder = ui.PictureRecorder();

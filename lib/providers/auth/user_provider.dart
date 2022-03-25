@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../controller/location_controller.dart';
 import '../../models/place_model.dart';
-import '../../screens/home_screen/map_screen2.dart';
+import '../../screens/home_screen/main_map/map_screen2.dart';
 import '../../screens/login_screen/add_phone_number.dart';
 
 class UserProvider extends ChangeNotifier {

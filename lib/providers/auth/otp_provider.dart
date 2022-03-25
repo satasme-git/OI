@@ -21,7 +21,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../models/objects.dart';
 import '../../screens/home_screen/map_screen.dart';
-import '../../screens/home_screen/map_screen2.dart';
+import '../../screens/home_screen/main_map/map_screen2.dart';
 import '../../screens/login_screen/otp_screen.dart';
 
 class OTPProvider extends ChangeNotifier {

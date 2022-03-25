@@ -3,14 +3,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/user_provider.dart';
-import 'package:oi/screens/login_screen/successfull_login.dart';
 import 'package:oi/utils/constatnt.dart';
-import 'package:oi/utils/util_funtions.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../login_screen/add_phone_number.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

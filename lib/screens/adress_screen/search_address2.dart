@@ -12,7 +12,7 @@ import 'package:oi/utils/global_data.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/util_funtions.dart';
-import '../home_screen/map_screen2.dart';
+import '../home_screen/main_map/map_screen2.dart';
 import '../home_screen/vehicle_select_map/vehicle_map.dart';
 
 class SearchAddress2 extends StatefulWidget {
