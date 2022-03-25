@@ -3,8 +3,6 @@ import 'dart:ui';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
-import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_pin.dart';
-
 import '../models/place_model.dart';
 import '../screens/home_screen/circle_marker.dart';
 import '../screens/home_screen/place_to_marker.dart';
@@ -31,6 +29,8 @@ class LocationController {
     placemodel.id = id;
     placemodel.address = address;
     placemodel.position = LatLng(lat, lng);
+
+    
     return placemodel;
   }
 
@@ -52,6 +52,8 @@ class LocationController {
         anchor: const Offset(0.5, 0.5),
       );
     } else if (val == "drop") {
+
+   
       dot = "dropdot";
       marker[dot] = Marker(
         markerId: MarkerId(dot),

@@ -1,24 +1,31 @@
+// import 'dart:html';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
-import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/auth_controller.dart';
 import 'package:oi/models/objects.dart';
-import 'package:oi/models/user_model.dart';
+
 import 'package:oi/screens/login_screen/otp_screen.dart';
 import 'package:oi/screens/login_screen/sign_up.dart';
 import 'package:oi/utils/util_funtions.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../controller/location_controller.dart';
+import '../../models/place_model.dart';
 import '../../screens/home_screen/map_screen2.dart';
 import '../../screens/login_screen/add_phone_number.dart';
 
 class UserProvider extends ChangeNotifier {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final LocationController _locationController = LocationController();
   bool validate() {
     if (formkey.currentState!.validate()) {
       // notifyListeners();
@@ -39,7 +46,7 @@ class UserProvider extends ChangeNotifier {
 
   UserModel _userModel = UserModel();
 
-  UserModel? get userModel => _userModel;
+  UserModel? get getuserModel => _userModel;
 
   //address model
   AddressModel _addressModel =
@@ -67,7 +74,6 @@ class UserProvider extends ChangeNotifier {
     if (phone_number != null) {
       await fetchSingleUser(context, phone_number);
       UtilFuntions.navigateTo(context, MapSample2());
-
     } else {
       UtilFuntions.navigateTo(context, AddPhoneNumber());
     }
@@ -85,7 +91,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void compareOtp(BuildContext context, String otp) {
-    if (otp == userModel!.otp) {
+    if (otp == getuserModel!.otp) {
       UtilFuntions.pageTransition(context, const SignUp(), const OTPScreen());
     } else {
       AwesomeDialog(
@@ -187,17 +193,39 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  
+  Future<void> setUserHomeAddresessPlace(PickResult result) async {
+    _addressModel.addressString = result.formattedAddress!;
+    _addressModel.latitude = result.geometry!.location.lat;
+    _addressModel.longitude = result.geometry!.location.lng;
 
-  //set user location geocoding result
-  void setAddressGeo(GeocodingResponse response) {
-
-    _addressModel.addressString = response.results[0].formattedAddress!;
-    _addressModel.latitude = response.results[0].geometry.location.lat;
-    _addressModel.longitude = response.results[0].geometry.location.lng;
-
-
+    _userModel.homeaddress = _addressModel..toJson();
+    _userModel = await AuthController().updateHomeAddress(_userModel);
 
     notifyListeners();
   }
+
+  Future<void> setUserWorkAddresessPlace(PickResult result) async {
+    _addressModel.addressString = result.formattedAddress!;
+    _addressModel.latitude = result.geometry!.location.lat;
+    _addressModel.longitude = result.geometry!.location.lng;
+
+    _userModel.workaddress = _addressModel..toJson();
+    _userModel = await AuthController().updateWorkAddress(_userModel);
+    notifyListeners();
+  }
+
+  deleteWorkAddress() {
+    _userModel.workaddress = null;
+
+    _authController.updateWorkAddress(_userModel);
+    notifyListeners();
+  }
+
+  deleteHomeAddress() {
+    _userModel.homeaddress = null;
+    _authController.updateHomeAddress(_userModel);
+    notifyListeners();
+  }
+
+  
 }

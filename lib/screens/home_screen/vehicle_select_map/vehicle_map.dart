@@ -6,13 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/utils/constatnt.dart';
-import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../providers/auth/user_provider.dart';
 import '../../../providers/map/location_provider.dart';
-import '../../../utils/fit_map.dart';
 
 class VehicleMap extends StatefulWidget {
   const VehicleMap({Key? key}) : super(key: key);
@@ -131,8 +128,8 @@ class _VehicleMapState extends State<VehicleMap> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(value.userModel!.firstname.toString()),
-                              Text(value.userModel!.email.toString()),
+                              Text(value.getuserModel!.firstname.toString()),
+                              Text(value.getuserModel!.email.toString()),
                               ActionChip(
                                   avatar: Icon(Icons.logout),
                                   label: Text("logout"),
@@ -160,7 +157,7 @@ class _VehicleMapState extends State<VehicleMap> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: size.height / 1.5,
+            height: size.height / 1.55,
             width: size.width,
             child: Stack(
               children: [
@@ -190,10 +187,6 @@ class _VehicleMapState extends State<VehicleMap> {
                           // values.setFocus("pick");
                           _goToTheLake(values.getPick?.position?.latitude,
                               values.getPick?.position?.longitude);
-                          Logger().i("@@@@@@@@@@@@@@  : " +
-                              values.markers.values.toString());
-                          Logger().i("!!!!!!!!!!!!!!!!  : " +
-                              values.polylines.values.toString());
                         },
                         markers: values.markers.values.toSet(),
                         // polylines: values.polylines.values.toSet(),
@@ -205,16 +198,89 @@ class _VehicleMapState extends State<VehicleMap> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: BouncingScrollPhysics(),
             child: Row(
               children: [
-                CustomCardTile(size: size),
-                CustomCardTile(size: size),
-                CustomCardTile(size: size),
+                CustomCardTile(image: "threewheel2.png"),
+                CustomCardTile(image: "car.png"),
+                CustomCardTile(image: 'prious.png'),
+                CustomCardTile(image: 'hiace.png'),
+                CustomCardTile(image: 'wagon1.png'),
               ],
             ),
           ),
+          Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    MaterialCommunityIcons.cash,
+                    size: 30,
+                    color: Colors.green,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("Cash"),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                    MaterialCommunityIcons.square_edit_outline,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("Add note"),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                    MaterialCommunityIcons.cog_outline,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text("promo"),
+                ],
+              ),
+            ],
+          ),
+          Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(0.0),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              onPressed: () {},
+              child: Ink(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.orangeAccent,
+                  // gradient: const LinearGradient(
+                  //     colors: [Colors.red, Colors.orange]),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(18),
+                  child: const Text('Book Now', textAlign: TextAlign.center),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -248,8 +314,8 @@ class _VehicleMapState extends State<VehicleMap> {
     Provider.of<LocationProvider>(context, listen: false)
         .setLatitude(position.latitude);
 
-    Provider.of<LocationProvider>(context, listen: false)
-        .currentLocationAddPlace(latLngPosition);
+    // Provider.of<LocationProvider>(context, listen: false)
+    //     .currentLocationAddPlace(latLngPosition);
     Provider.of<LocationProvider>(context, listen: false)
         .getPolyLine(controller);
   }
@@ -285,96 +351,80 @@ class _VehicleMapState extends State<VehicleMap> {
 
 class CustomCardTile extends StatelessWidget {
   const CustomCardTile({
+    required this.image,
     Key? key,
-    required this.size,
   }) : super(key: key);
 
-  final Size size;
-
+  final String image;
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
       child: Container(
-        // margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        width: 125,
+        height: 160,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: Colors.black,
+            width: 0.5,
           ),
         ),
-        width: size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 125,
-              height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: Colors.black,
-                  width: 0.5,
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("IN 21 mins"),
+              Image.asset(
+                Constants.imageAsset(image),
+                scale: 3,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "Tuk",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(
+                    MaterialCommunityIcons.account_outline,
+                    size: 18,
+                    color: Colors.grey,
+                  ),
+                  Text("2")
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: new Divider(
+                  color: Colors.grey,
                 ),
               ),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("IN 21 mins"),
-                    Image.asset(
-                      Constants.imageAsset('three-wheelers.jpg'),
-                      scale: 2.5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Tuk",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Icon(
-                          MaterialCommunityIcons.account_outline,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
-                        Text("2")
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      child: new Divider(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const Text(
-                      "LKR 176.37",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Row(
-                      children: const [
-                        Icon(
-                          MaterialCommunityIcons.star,
-                          color: Colors.amber,
-                        ),
-                        Text(
-                          "Earn 1.8 stars",
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
+              const Text(
+                "LKR 176.37",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
-            )
-          ],
+              Row(
+                children: const [
+                  Icon(
+                    MaterialCommunityIcons.star,
+                    color: Colors.amber,
+                  ),
+                  Text(
+                    "Earn 1.8 stars",
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

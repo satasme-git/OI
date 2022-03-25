@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
-import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
-import 'package:oi/screens/adress_screen/select_adresses.dart';
 import 'package:oi/utils/app_colors.dart';
 import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
@@ -175,8 +172,8 @@ class MapSampleState extends State<MapSample> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(value.userModel!.firstname.toString()),
-                              Text(value.userModel!.email.toString()),
+                              Text(value.getuserModel!.firstname.toString()),
+                              Text(value.getuserModel!.email.toString()),
                               ActionChip(
                                   avatar: Icon(Icons.logout),
                                   label: Text("logout"),

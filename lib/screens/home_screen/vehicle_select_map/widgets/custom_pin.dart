@@ -67,7 +67,7 @@ class CustomPin extends CustomPainter {
     _drawText(
       canvas: canvas,
       size: size,
-      text: "b",
+      text: "",
       dx: size.height + 10,
       width: size.width - size.height - 10,
     );

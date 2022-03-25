@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/otp_provider.dart';
 
@@ -8,7 +7,6 @@ import 'package:oi/providers/auth/timer_provider.dart';
 
 import 'package:oi/utils/constatnt.dart';
 import 'package:oi/utils/util_funtions.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 

@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:logger/logger.dart';
-import 'package:oi/models/user_model.dart';
-import 'package:oi/providers/auth/user_provider.dart';
-import 'package:provider/provider.dart';
+
 import 'package:uuid/uuid.dart';
+
+import '../models/objects.dart';
 
 class AuthController {
   final uuid = Uuid();
@@ -30,50 +31,33 @@ class AuthController {
     await firebaseFirestore
         .collection("users")
         .doc(docId)
-        .set(userModel.toMap())
+        .set(userModel.toJson())
         .then((value) async {
       DocumentSnapshot snapshot = await users.doc(docId).get();
       // result = 1;
       Logger().d(snapshot.data());
-      userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+      userModel = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
     });
 
     return userModel;
   }
 
-
-
-
-
-
-
-
-
-
-
-  Future<UserModel?> updateUser1( BuildContext context, String phone, String otp) async {
+  Future<UserModel?> updateUser1(
+      BuildContext context, String phone, String otp) async {
     UserModel userModel = UserModel();
     final docId = uuid.v5(Uuid.NAMESPACE_URL, phone);
 
-
- await users.doc(docId).update({
+    await users.doc(docId).update({
       'otp': otp,
     }).then((value) async {
       DocumentSnapshot snapshot = await users.doc(docId).get();
       // result = 1;
       Logger().d(snapshot.data());
-      userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+      userModel = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
     });
 
-     return userModel;
+    return userModel;
   }
-
-
-
-
-
-
-
 
   Future<bool> loginCheck(
     String phone,
@@ -105,7 +89,7 @@ class AuthController {
       DocumentSnapshot snapshot = await users.doc(docId).get();
       // result = 1;
       Logger().d(snapshot.data());
-      userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+      userModel = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
     });
     return userModel;
   }
@@ -116,12 +100,57 @@ class AuthController {
       DocumentSnapshot snapshot = await users.doc(docId).get();
       Logger().i(snapshot.data());
       UserModel userModel =
-          UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
-      Logger().d(userModel.firstname);
+          UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
+      Logger().d("&ZZ&& : " + userModel.homeaddress.toString());
 
       return userModel;
     } catch (e) {
       Logger().e(e);
     }
+  }
+
+  Future<UserModel> updateHomeAddress(UserModel user) async {
+    UserModel userModel = UserModel();
+    await users.doc(user.uid).update({
+      'uid': user.uid,
+      'firstname': user.firstname,
+      'lastname': user.lastname,
+      'phone': user.phone,
+      'email': user.email,
+      'otp': user.otp,
+      'status': user.status,
+      'homeaddress':
+          user.homeaddress != null ? user.homeaddress!.toJson() : null,
+      // 'workaddress': user.workaddress!=null?user.workaddress!.toJson():null,
+    }).then((value) async {
+      DocumentSnapshot snapshot = await users.doc(user.uid).get();
+      // result = 1;
+      Logger().d(snapshot.data());
+      userModel = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
+    });
+    return userModel;
+  }
+
+  Future<UserModel> updateWorkAddress(UserModel user) async {
+    UserModel userModel = UserModel();
+
+    await users.doc(user.uid).update({
+      'uid': user.uid,
+      'firstname': user.firstname,
+      'lastname': user.lastname,
+      'phone': user.phone,
+      'email': user.email,
+      'otp': user.otp,
+      'status': user.status,
+      // 'homeaddress': user.homeaddress!=null?user.homeaddress!.toJson():null,
+      'workaddress':
+          user.workaddress != null ? user.workaddress!.toJson() : null,
+    }).then((value) async {
+      DocumentSnapshot snapshot = await users.doc(user.uid).get();
+      // result = 1;
+      Logger().d(snapshot.data());
+      userModel = UserModel.fromJson(snapshot.data() as Map<String, dynamic>);
+    });
+    return userModel;
   }
 }

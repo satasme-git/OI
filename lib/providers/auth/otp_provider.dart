@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:oi/controller/auth_controller.dart';
 import 'dart:math';
 import 'package:oi/controller/db_controller.dart';
-import 'package:oi/models/user_model.dart';
+
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
 import 'package:oi/screens/adress_screen/search_address2.dart';
@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../models/objects.dart';
 import '../../screens/home_screen/map_screen.dart';
 import '../../screens/home_screen/map_screen2.dart';
 import '../../screens/login_screen/otp_screen.dart';
@@ -173,7 +174,7 @@ class OTPProvider extends ChangeNotifier {
       bool startEnable =
           Provider.of<TimerProvider>(context, listen: false).startEnable;
       if (!startEnable) {
-        userModel = Provider.of<UserProvider>(context, listen: false).userModel;
+        userModel = Provider.of<UserProvider>(context, listen: false).getuserModel;
 
         if (_otpCode.text == userModel!.otp) {
           prefs.setString('phone_number', _phoneNumber.text);

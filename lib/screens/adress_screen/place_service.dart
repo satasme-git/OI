@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 
-
 class Place {
   final placeId;
   final description;
 
-  Place({ this.placeId, this.description});
+  Place({this.placeId, this.description});
   static Place fromJson(Map<String, dynamic> json) {
     return Place(
       placeId: json['place_id'],
@@ -25,7 +24,6 @@ class PlaceApi {
   final apiKey = androidKey;
 
   Future<List<Place>?> serchPredictions(String input) async {
-    
     try {
       final response = await _dio.get(
         'https://maps.googleapis.com/maps/api/place/autocomplete/json',
@@ -33,14 +31,16 @@ class PlaceApi {
           "input": input,
           "key": apiKey,
           "language": "es-ES",
-          "types": "establishment",
+          'mode': 'Mode.overlay',
+          "types": [],
           "components": "country:LK"
         },
       );
       // print(response.data);
-   final List<Place>?  places = (response.data['predictions'] as List).map((item) => Place.fromJson(item)).toList();
+      final List<Place>? places = (response.data['predictions'] as List)
+          .map((item) => Place.fromJson(item))
+          .toList();
       return places;
-      
     } catch (e) {
       return null;
     }

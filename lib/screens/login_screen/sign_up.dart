@@ -213,7 +213,7 @@ class _SignUpState extends State<SignUp> {
                             onPressed: () {
                               if (validate()) {
                                 value.startRegister(
-                                    context, value.userModel!.uid.toString());
+                                    context, value.getuserModel!.uid.toString());
                               }
                             },
                             child: Ink(
@@ -249,7 +249,7 @@ class _SignUpState extends State<SignUp> {
                                 onPressed: () {
                                   Provider.of<UserProvider>(context,
                                           listen: false)
-                                      .Login(context,value.userModel!.uid.toString());
+                                      .Login(context,value.getuserModel!.uid.toString());
                                 },
                                 child: Image.asset(
                                   Constants.imageAsset('google.png'),
@@ -268,7 +268,7 @@ class _SignUpState extends State<SignUp> {
                                 onPressed: () {
                                    Provider.of<UserProvider>(context,
                                           listen: false)
-                                      .loginFb(context,value.userModel!.uid.toString());
+                                      .loginFb(context,value.getuserModel!.uid.toString());
                                 },
                                 child: Image.asset(
                                   Constants.imageAsset('facebook.png'),

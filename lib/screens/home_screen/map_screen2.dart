@@ -7,14 +7,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
-import 'package:oi/screens/home_screen/place_to_marker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../controller/location_controller.dart';
 import '../../providers/auth/user_provider.dart';
 import '../../utils/app_colors.dart';
-import '../../utils/util_funtions.dart';
 import '../adress_screen/search_address2.dart';
 
 class MapSample2 extends StatefulWidget {
@@ -150,8 +148,8 @@ class MapSample2State extends State<MapSample2> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(value.userModel!.firstname.toString()),
-                              Text(value.userModel!.email.toString()),
+                              Text(value.getuserModel!.firstname.toString()),
+                              Text(value.getuserModel!.email.toString()),
                               ActionChip(
                                   avatar: Icon(Icons.logout),
                                   label: Text("logout"),
@@ -175,6 +173,7 @@ class MapSample2State extends State<MapSample2> {
           ],
         ),
       ),
+      
       body: Stack(
         children: [
           Container(
@@ -204,7 +203,7 @@ class MapSample2State extends State<MapSample2> {
                     values.setFocus("pick");
 
                     _goToTheLake(values.getPick?.position?.latitude,
-                        values.getPick?.position?.longitude);
+                        values.getPick?.position?.longitude,values.getPick);
                     // values.getCurentLocationisSet != 0.0
                     //     ? _goToTheLake(
                     //         values2.getlattiude, values2.getlongitude)
@@ -619,8 +618,7 @@ class MapSample2State extends State<MapSample2> {
                         setState(() {
                           myLocation = false;
                         });
-                        Logger().i(value2.getPick?.address.toString(),
-                            ">>>>>>>>>>>>>>>>>>>>>>>>>>>> : : : :  2 ");
+                       
                         value2.setFocus("pick");
                         Navigator.push(
                             context,
@@ -692,7 +690,10 @@ class MapSample2State extends State<MapSample2> {
     );
   }
 
-  Future<void> _goToTheLake(lat, long) async {
+  Future<void> _goToTheLake(lat, long,getPick) async {
+
+    Logger().e(getPick!=null?getPick?.address.toString():"asasas");
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();

@@ -73,8 +73,8 @@ class _SuccessLoginState extends State<SuccessLogin> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(value.userModel!.firstname.toString()),
-                          Text(value.userModel!.email.toString()),
+                          Text(value.getuserModel!.firstname.toString()),
+                          Text(value.getuserModel!.email.toString()),
                           ActionChip(
                               avatar: Icon(Icons.logout),
                               label: Text("logout"),
