@@ -29,7 +29,19 @@ class _SplashScreenState extends State<SplashScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
-        color: Colors.black,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              colors: [
+                Color.fromRGBO(247, 148, 29, 1),
+                Color.fromRGBO(254, 203, 48, 1),
+                // Colors.blue,
+                // Colors.purple,
+              ],
+            ),
+          ),
+        // color: Colors.black,
         height: size.height,
         width: size.width,
         child: Column(
@@ -38,13 +50,14 @@ class _SplashScreenState extends State<SplashScreen> {
               height: size.height / 2.3,
             ),
             Image.asset(
-              Constants.imageAsset("iologo.png"),
+              Constants.imageAsset("iologo1.png"),
+              scale: 1.5,
             ),
             const SizedBox(
               height: 10,
             ),
             const SpinKitRing(
-              color: Colors.white,
+              color: Colors.black,
               size: 28.0,
               lineWidth: 2,
             ),
@@ -53,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const CustomText(
               text: "loading informations...",
-              color: Colors.white,
+              color: Colors.black,
               fontsize: 12,
             ),
           ],

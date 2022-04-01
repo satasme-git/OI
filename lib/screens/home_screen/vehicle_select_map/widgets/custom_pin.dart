@@ -60,6 +60,7 @@ class CustomPin extends CustomPainter {
       bottomLeft: const Radius.circular(30),
       topRight: const Radius.circular(30),
       bottomRight : const Radius.circular(30),
+      
     );
 
     canvas.drawRRect(miniRect, paint);

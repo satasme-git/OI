@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,16 +7,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
-import 'package:oi/screens/home_screen/main_map/widgets/circle_avatar.dart';
+import 'package:oi/providers/map/vehicle_provider.dart';
 import 'package:oi/utils/constatnt.dart';
-import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../componants/custom_text.dart';
 import '../../../controller/location_controller.dart';
 import '../../../providers/auth/user_provider.dart';
 import '../../../utils/app_colors.dart';
+import '../../add_vehicle/add_vehicle.dart';
 import '../../adress_screen/search_address2.dart';
 import 'widgets/custom_listtile.dart';
 
@@ -95,7 +92,7 @@ class MapSample2State extends State<MapSample2> {
               begin: Alignment.bottomLeft,
               end: Alignment.topRight,
               colors: [
-                Color.fromRGBO(244, 167, 41, 1),
+                Color.fromRGBO(247, 148, 29, 1),
                 Color.fromRGBO(254, 203, 48, 1),
                 // Colors.blue,
                 // Colors.purple,
@@ -234,45 +231,63 @@ class MapSample2State extends State<MapSample2> {
                   },
                 ),
               ),
+              Consumer<VehicleProvider>(
+                builder: (context, value, child) {
+                  return Column(
+                    children: [
+                      CustomListTile(
+                        text: "Profile",
+                        iconleading: MaterialCommunityIcons.account_outline,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => AddVehcle()),
+                          );
+                        },
+                      ),
+                      CustomListTile(
+                        text: "My Trips",
+                        iconleading: MaterialCommunityIcons.routes,
+                        onTap: () {},
+                      ),
+                      CustomListTile(
+                        text: "Payment",
+                        iconleading: MaterialCommunityIcons.credit_card_outline,
+                        onTap: () {},
+                      ),
 
-              CustomListTile(
-                text: "Profile",
-                iconleading: MaterialCommunityIcons.account_outline,
-              ),
-              CustomListTile(
-                text: "My Trips",
-                iconleading: MaterialCommunityIcons.routes,
-              ),
-              CustomListTile(
-                text: "Payment",
-                iconleading: MaterialCommunityIcons.credit_card_outline
-              ),
-              CustomListTile(
-                text: "Notification",
-                iconleading: MaterialCommunityIcons.bell_outline
-              ),
-              CustomListTile(
-                text: "Helps",
-                iconleading: MaterialCommunityIcons.help_circle_outline
-              ),
-              CustomListTile(
-                text: "Free trips",
-                iconleading: MaterialCommunityIcons.gift_outline
-              ),
-              CustomListTile(
-                text: "Settings",
-                iconleading: MaterialCommunityIcons.cog_outline
-              ),
+                      CustomListTile(
+                        text: "Notification",
+                        iconleading: MaterialCommunityIcons.bell_outline,
+                        onTap: () {},
+                      ),
+                      CustomListTile(
+                        text: "Helps",
+                        iconleading: MaterialCommunityIcons.help_circle_outline,
+                        onTap: () {},
+                      ),
+                      CustomListTile(
+                        text: "Free trips",
+                        iconleading: MaterialCommunityIcons.gift_outline,
+                        onTap: () {},
+                      ),
+                      CustomListTile(
+                        text: "Settings",
+                        iconleading: MaterialCommunityIcons.cog_outline,
+                        onTap: () {},
+                      ),
+                      Divider(), //here is a divider
 
-              Divider(), //here is a divider
-
-              CustomListTile(
-                text: "Logout",
-                iconleading: MaterialCommunityIcons.power,
-                
-
+                      CustomListTile(
+                        text: "Logout",
+                        iconleading: MaterialCommunityIcons.power,
+                        onTap: () {},
+                      ),
+                    ],
+                  );
+                },
               ),
-
             ],
           ),
         ),
@@ -562,21 +577,21 @@ class MapSample2State extends State<MapSample2> {
                       Container(
                         height: 15,
                         width: 0.5,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.black,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 1,
                       ),
                       Container(
                         height: 6,
                         width: 6,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.black,
                         ),
                       ),
-                      Text(
+                      const Text(
                         "Drop",
                         style: TextStyle(
                           fontSize: 15,
@@ -659,7 +674,7 @@ class MapSample2State extends State<MapSample2> {
               Container(
                 height: 20,
                 width: 0.5,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black,
                 ),
               ),
@@ -695,7 +710,7 @@ class MapSample2State extends State<MapSample2> {
                     Container(
                       height: 5,
                       width: 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.black,
                       ),
                     ),

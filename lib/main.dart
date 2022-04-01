@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:oi/providers/auth/sign_up_provider.dart';
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/providers/auth/user_provider.dart';
+import 'package:oi/providers/map/vehicle_provider.dart';
+import 'package:oi/screens/add_vehicle/add_vehicle.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth/otp_provider.dart';
 import 'providers/map/location_provider.dart';
@@ -28,8 +30,10 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => LocationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => VehicleProvider(),
         )
-        
       ],
       child: const MyApp(),
     ),

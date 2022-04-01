@@ -1,13 +1,21 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:oi/providers/map/vehicle_provider.dart';
+import 'package:oi/screens/home_screen/main_map/map_screen2.dart';
+import 'package:oi/screens/home_screen/map_screen.dart';
+import 'package:oi/screens/home_screen/vehicle_select_map/payment.dart';
+import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_vehicle_card.dart';
 import 'package:oi/utils/constatnt.dart';
+import 'package:oi/utils/util_funtions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletons/skeletons.dart';
 import '../../../providers/auth/user_provider.dart';
 import '../../../providers/map/location_provider.dart';
 
@@ -43,6 +51,8 @@ class _VehicleMapState extends State<VehicleMap> {
     controller = await _controller.future;
     controller!.dispose();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -187,46 +197,82 @@ class _VehicleMapState extends State<VehicleMap> {
                           // values.setFocus("pick");
                           _goToTheLake(values.getPick?.position?.latitude,
                               values.getPick?.position?.longitude);
+
+                              
+
                         },
                         markers: values.markers.values.toSet(),
-                        // polylines: values.polylines.values.toSet(),
                         polylines: values.getPolyline,
                       );
                     },
                   ),
                 ),
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 700),
+                  curve: Curves.easeInOutBack,
+                  bottom: 10,
+                  right: 10,
+                  child: InkWell(
+                    onTap: () {},
+                    child: Container(
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 1,
+                                spreadRadius: 2),
+                          ]),
+                      child: Icon(Icons.gps_fixed),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: BouncingScrollPhysics(),
-            child: Row(
-              children: [
-                CustomCardTile(image: "threewheel2.png"),
-                CustomCardTile(image: "car.png"),
-                CustomCardTile(image: 'prious.png'),
-                CustomCardTile(image: 'hiace.png'),
-                CustomCardTile(image: 'wagon1.png'),
-              ],
-            ),
+
+          CustomVehicleCard(
+            height: size.height / 5,
           ),
+
+          // SingleChildScrollView(
+          //   scrollDirection: Axis.horizontal,
+          //   physics: BouncingScrollPhysics(),
+          //   child: Row(
+          //     children: [
+          //       CustomCardTile(image: "threewheel2.png"),
+          //       CustomCardTile(image: "car.png"),
+          //       CustomCardTile(image: 'prious.png'),
+          //       CustomCardTile(image: 'hiace.png'),
+          //       CustomCardTile(image: 'wagon1.png'),
+          //     ],
+          //   ),
+          // ),
           Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    MaterialCommunityIcons.cash,
-                    size: 30,
-                    color: Colors.green,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text("Cash"),
-                ],
+              InkWell(
+                onTap: () {
+                  UtilFuntions.pageTransition(
+                      context, PaymentScreen(), VehicleMap());
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      MaterialCommunityIcons.cash,
+                      size: 30,
+                      color: Colors.green,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text("Cash"),
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -314,119 +360,143 @@ class _VehicleMapState extends State<VehicleMap> {
     Provider.of<LocationProvider>(context, listen: false)
         .setLatitude(position.latitude);
 
-    // Provider.of<LocationProvider>(context, listen: false)
-    //     .currentLocationAddPlace(latLngPosition);
     Provider.of<LocationProvider>(context, listen: false)
-        .getPolyLine(controller);
+        .getPolyLineCodes(controller);
   }
 
   AppBar _appBar() {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      leading: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Container(
-          height: 5,
-          width: 5,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), color: Colors.white),
-          child: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(MaterialCommunityIcons.sort_variant),
-                color: Colors.black,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CustomCardTile extends StatelessWidget {
-  const CustomCardTile({
-    required this.image,
-    Key? key,
-  }) : super(key: key);
-
-  final String image;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-      child: Container(
-        width: 125,
-        height: 160,
+      leading: Container(
+        margin: EdgeInsets.all(10),
+        // height: 25,
+        // width: 25,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: Colors.black,
-            width: 0.5,
-          ),
-        ),
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("IN 21 mins"),
-              Image.asset(
-                Constants.imageAsset(image),
-                scale: 3,
+            borderRadius: BorderRadius.circular(10), color: Colors.white),
+        child: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              padding: EdgeInsets.all(3),
+              icon: const Icon(
+                MaterialCommunityIcons.chevron_left,
+                size: 30,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    "Tuk",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Icon(
-                    MaterialCommunityIcons.account_outline,
-                    size: 18,
-                    color: Colors.grey,
-                  ),
-                  Text("2")
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: new Divider(
-                  color: Colors.grey,
-                ),
-              ),
-              const Text(
-                "LKR 176.37",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              Row(
-                children: const [
-                  Icon(
-                    MaterialCommunityIcons.star,
-                    color: Colors.amber,
-                  ),
-                  Text(
-                    "Earn 1.8 stars",
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
+              color: Colors.black,
+              onPressed: () {
+                Provider.of<LocationProvider>(context, listen: false)
+                    .removeMarker();
+                UtilFuntions.pageTransition(
+                    context, MapSample2(), VehicleMap());
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            );
+          },
         ),
       ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.white,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(55),
+                  child: Image.asset(
+                    Constants.imageAsset('profile.png'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
+
+
+
+// class CustomCardTile extends StatelessWidget {
+//   const CustomCardTile({
+//     required this.image,
+//     Key? key,
+//   }) : super(key: key);
+
+//   final String image;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+//       child: Container(
+//         width: 125,
+//         height: 160,
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(15),
+//           border: Border.all(
+//             color: Colors.black,
+//             width: 0.5,
+//           ),
+//         ),
+//         child: Container(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text("IN 21 mins"),
+//               Image.asset(
+//                 Constants.imageAsset(image),
+//                 scale: 3,
+//               ),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: const [
+//                   Text(
+//                     "Tuk",
+//                     style: TextStyle(
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   Icon(
+//                     MaterialCommunityIcons.account_outline,
+//                     size: 18,
+//                     color: Colors.grey,
+//                   ),
+//                   Text("2")
+//                 ],
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.symmetric(horizontal: 30),
+//                 child: new Divider(
+//                   color: Colors.grey,
+//                 ),
+//               ),
+//               const Text(
+//                 "LKR 176.37",
+//                 style: TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 16,
+//                 ),
+//               ),
+//               Row(
+//                 children: const [
+//                   Icon(
+//                     MaterialCommunityIcons.star,
+//                     color: Colors.amber,
+//                   ),
+//                   Text(
+//                     "Earn 1.8 stars",
+//                     style: TextStyle(
+//                       color: Colors.grey,
+//                     ),
+//                   )
+//                 ],
+//               )
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

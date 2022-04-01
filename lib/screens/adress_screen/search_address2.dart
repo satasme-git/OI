@@ -11,6 +11,7 @@ import 'package:oi/screens/adress_screen/place_service.dart';
 import 'package:oi/utils/global_data.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/map/vehicle_provider.dart';
 import '../../utils/util_funtions.dart';
 import '../home_screen/main_map/map_screen2.dart';
 import '../home_screen/vehicle_select_map/vehicle_map.dart';
@@ -559,6 +560,8 @@ class _SearchAddress2State extends State<SearchAddress2> {
         MaterialPageRoute(builder: (BuildContext context) => VehicleMap()),
       );
     }
+    //fetch vehicles
+    Provider.of<VehicleProvider>(context,listen:false).fetchVehicles();
   }
 }
 
@@ -649,4 +652,9 @@ setSelectedAddress(BuildContext context,String res) {
       MaterialPageRoute(builder: (BuildContext context) => VehicleMap()),
     );
   }
+
+   //fetch vehicles
+    Provider.of<VehicleProvider>(context,listen:false).fetchVehicles();
+
+
 }

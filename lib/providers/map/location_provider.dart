@@ -17,11 +17,10 @@ class LocationProvider extends ChangeNotifier {
   Map<String, Marker> marker = {};
   Map<String, Marker> markerOrigin = {};
 
-  Set<Polyline> _polylines = Set<Polyline>();
+  Set<Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = [];
 
   Set<Polyline> get getPolyline => _polylines;
-  PolylinePoints polylinePoints = PolylinePoints();
 
   // late Place _placeModel;
 
@@ -37,6 +36,9 @@ class LocationProvider extends ChangeNotifier {
 
   double get getCurentLocationisSet => _currentlocationlatitude;
 
+  double _distance = 0;
+  double get getDistance => _distance;
+
   Map<String, Marker> get markers => marker;
   Map<String, Marker> get markersOrigin => markerOrigin;
 
@@ -50,10 +52,7 @@ class LocationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void setSinglePlace(Place model) {
-  //   _placeModel = model;
-  //   notifyListeners();
-  // }
+  
 
 // search from location selector
   Future<void> startAddPlace(PickResult result) async {
@@ -67,7 +66,7 @@ class LocationProvider extends ChangeNotifier {
     if (_pickLocationfocus == "pick") {
       _pick = place;
     }
-    Logger().d("serch address 2 " + place.position!.latitude.toString());
+
     addMarker(place);
     notifyListeners();
   }
@@ -83,8 +82,6 @@ class LocationProvider extends ChangeNotifier {
 
     if (_pickLocationfocus == "pick") {
       _pick = place;
-
-      Logger().d("serch address 1 " + place.position!.latitude.toString());
     }
 
     addMarker(place);
@@ -103,6 +100,17 @@ class LocationProvider extends ChangeNotifier {
       icon: originIcon,
       anchor: Offset(0.5, 1.2),
     );
+
+    notifyListeners();
+  }
+
+  Future<void> removeMarker() async {
+    //  _polylines.removeAll({'polyline'});
+    // _polylines = {};
+    // polylineCoordinates = [];
+
+     
+    marker = await _locationController.removeMarkers();
 
     notifyListeners();
   }
@@ -129,15 +137,29 @@ pass latitude and longitude, then get location with location id and address, pas
     notifyListeners();
   }
 
-  Future<void> getPolyLine(GoogleMapController controller) async {
-    List<LatLng> polylineCoordinates =
-        await _locationController.addPolyLines(controller);
+  Future<void> getPolyLineCodes(GoogleMapController controller) async {
+    
+
+    polylineCoordinates =
+        await _locationController.getPolyLineCordinates(controller);
 
     _polylines.add(Polyline(
         polylineId: PolylineId('polyline'),
         width: 2,
         color: Colors.orange.shade800,
         points: polylineCoordinates));
+
+    _distance = await _locationController.getDistance();
+
+    // _polylines.forEach((value) => {
+    //       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ : " +
+    //           value.points.toString())
+    //     });
+
+    // Logger().d(
+    //     "#########################%% : " + _polylines.elementAt(0).toString());
+    // Logger()
+    //     .d("#########################)) : " + polylineCoordinates.toString());
 
     notifyListeners();
   }
@@ -158,8 +180,6 @@ pass latitude and longitude, then get location with location id and address, pas
           ? _userModel.homeaddress!.longitude
           : _userModel.workaddress!.longitude,
     );
-
-    Logger().i("*********************** : " + place.toJson().toString());
 
     if (_pickLocationfocus == "pick") {
       _pick = place;

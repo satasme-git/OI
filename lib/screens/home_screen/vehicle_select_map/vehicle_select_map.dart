@@ -198,10 +198,6 @@ class _VehicleMapState extends State<VehicleMap> {
 
                     controller.setMapStyle(value);
 
-                    // values.getCurentLocationisSet != 0.0
-                    //     ? _goToTheLake(
-                    //         values2.getlattiude, values2.getlongitude)
-                    //     : _locationColombo;
                   },
                   markers: values.markers.values.toSet(),
                 );

@@ -135,8 +135,9 @@ class _OTPScreenState extends State<OTPScreen> {
                           //   if (timer.stopEnable) {
                           //     value2.stopTimer();
 
-                          value.changeTryAgainBtnfalse();
+                          
                           value.fetchSingleUser(context, value.getOTPCode);
+                          value.changeTryAgainBtnfalse();
                           //   }
                           // }
                         },
