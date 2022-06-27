@@ -13,7 +13,7 @@ class AuthController {
 
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection('passengers');
 
   Future<UserModel?> registerUser(
       BuildContext context, String phone, String otp) async {
@@ -29,7 +29,7 @@ class AuthController {
     userModel.status = 0;
 
     await firebaseFirestore
-        .collection("users")
+        .collection("passengers")
         .doc(docId)
         .set(userModel.toJson())
         .then((value) async {

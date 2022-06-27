@@ -47,6 +47,7 @@ class OTPProvider extends ChangeNotifier {
   TextEditingController get phoneController => _phoneNumber;
   TextEditingController get otpCodeController => _otpCode;
 
+
   String get getOTPCode => _otpcode;
   String get errorString => _errorString;
   String get otperrorString => _otperrorString;
@@ -67,6 +68,7 @@ class OTPProvider extends ChangeNotifier {
   }
 
   void get6DigitNumber() {
+    
     Random random = Random();
     String number = "";
     for (int i = 0; i < 4; i++) {
@@ -109,6 +111,7 @@ class OTPProvider extends ChangeNotifier {
   }
 
   Future<void> startRegister(BuildContext context) async {
+
     UserModel userModel;
     try {
       get6DigitNumber();
@@ -137,6 +140,7 @@ class OTPProvider extends ChangeNotifier {
           } else {
             userModel = (await AuthController().registerUser(
               context,
+              
               _phoneNumber.text,
               otp,
             ))!;
@@ -205,7 +209,7 @@ class OTPProvider extends ChangeNotifier {
 
   void sendOtp(otp) async {
     final response = await http.post(
-      Uri.parse('https://youandmenest.com/tr_reactnative/send_sms_by_otp.php'),
+      Uri.parse('https://boxesfree.shop/send_sms_by_otp.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

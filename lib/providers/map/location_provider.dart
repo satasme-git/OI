@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:google_maps_webservice/geocoding.dart';
@@ -13,7 +15,16 @@ import '../../screens/home_screen/vehicle_select_map/widgets/place_to_marker.dar
 import '../../utils/global_data.dart';
 import '../auth/user_provider.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 class LocationProvider extends ChangeNotifier {
+  final radius = BehaviorSubject<double>.seeded(100.0);
+  final _firestore = FirebaseFirestore.instance;
+
+  late Stream<List<DocumentSnapshot>> stream;
+  late Geoflutterfire geo;
+  ////////////////////////////////////////////////////
+  ///
   Map<String, Marker> marker = {};
   Map<String, Marker> markerOrigin = {};
 
@@ -51,8 +62,6 @@ class LocationProvider extends ChangeNotifier {
     _currentlocationlatitude = latitude;
     notifyListeners();
   }
-
-  
 
 // search from location selector
   Future<void> startAddPlace(PickResult result) async {
@@ -109,7 +118,6 @@ class LocationProvider extends ChangeNotifier {
     // _polylines = {};
     // polylineCoordinates = [];
 
-     
     marker = await _locationController.removeMarkers();
 
     notifyListeners();
@@ -138,8 +146,6 @@ pass latitude and longitude, then get location with location id and address, pas
   }
 
   Future<void> getPolyLineCodes(GoogleMapController controller) async {
-    
-
     polylineCoordinates =
         await _locationController.getPolyLineCordinates(controller);
 
@@ -150,16 +156,6 @@ pass latitude and longitude, then get location with location id and address, pas
         points: polylineCoordinates));
 
     _distance = await _locationController.getDistance();
-
-    // _polylines.forEach((value) => {
-    //       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ : " +
-    //           value.points.toString())
-    //     });
-
-    // Logger().d(
-    //     "#########################%% : " + _polylines.elementAt(0).toString());
-    // Logger()
-    //     .d("#########################)) : " + polylineCoordinates.toString());
 
     notifyListeners();
   }
@@ -187,5 +183,72 @@ pass latitude and longitude, then get location with location id and address, pas
 
     addMarker(place);
     notifyListeners();
+  }
+
+  void getAllDrivers(int val) {
+   
+    if (val == 0) {
+     
+      vehileStream("assets/images/tuk_map.png", val);
+     
+    } else if (val == 1) {
+      
+      vehileStream("assets/images/car_map.png", val);
+    } else if (val == 3) {
+      
+      vehileStream("assets/images/prius_map.png", val);
+    } else if (val == 5) {
+     
+      vehileStream("assets/images/KDH_map.png", val);
+    }
+     removeMarkers();
+  }
+
+  void vehileStream(image, value) {
+    geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(latitude: 6.9543, longitude: 80.2046);
+    stream = radius.switchMap((rad) {
+      final collectionReference =
+          _firestore.collection('drivers').where('type', isEqualTo: '${value}');
+
+      return geo
+          .collection(collectionRef: collectionReference)
+          .within(center: center, radius: rad, field: 'position');
+    });
+    stream.listen((List<DocumentSnapshot> documentList) {
+      documentList.forEach((DocumentSnapshot document) async {
+        final data = document.data() as Map<String, dynamic>;
+        final GeoPoint point = data['position']['geopoint'];
+        final id =
+            MarkerId(point.latitude.toString() + point.longitude.toString());
+        marker[id.toString()] = Marker(
+          markerId: id,
+          position: LatLng(point.latitude, point.longitude),
+          icon: await BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(2, 3)), '${image}'),
+          anchor: const Offset(0.5, 0.5),
+        );
+        notifyListeners();
+      });
+    });
+  }
+
+  void removeMarkers() {
+
+ Logger().d("^^^^^^^^^^^^^^^^^ : "+marker.values.length.toString());
+
+    // for (var values in marker.values) {
+     
+      marker.removeWhere(
+        (key, marker) =>
+            marker.markerId.value != "pick" &&
+            marker.markerId.value != "drop" &&
+            marker.markerId.value != "dropdot" &&
+            marker.markerId.value != "pickdot",
+      );
+     notifyListeners();
+      // 
+    // }
+     
   }
 }

@@ -16,6 +16,7 @@ import '../../../providers/auth/user_provider.dart';
 import '../../../utils/app_colors.dart';
 import '../../add_vehicle/add_vehicle.dart';
 import '../../adress_screen/search_address2.dart';
+import '../../driver_screen/add_driver.dart';
 import 'widgets/custom_listtile.dart';
 
 class MapSample2 extends StatefulWidget {
@@ -246,10 +247,17 @@ class MapSample2State extends State<MapSample2> {
                           );
                         },
                       ),
+                      
                       CustomListTile(
                         text: "My Trips",
                         iconleading: MaterialCommunityIcons.routes,
-                        onTap: () {},
+                        onTap: () {
+                           Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => AddDriver()),
+                          );
+                        },
                       ),
                       CustomListTile(
                         text: "Payment",

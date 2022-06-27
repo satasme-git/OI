@@ -24,7 +24,7 @@ import '../../screens/login_screen/add_phone_number.dart';
 class UserProvider extends ChangeNotifier {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection('passengers');
   final LocationController _locationController = LocationController();
   bool validate() {
     if (formkey.currentState!.validate()) {

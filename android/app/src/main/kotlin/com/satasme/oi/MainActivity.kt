@@ -1,4 +1,4 @@
-package com.satasme.oi
+package com.satasme.oi.passanger
 
 import io.flutter.embedding.android.FlutterActivity
 

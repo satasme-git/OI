@@ -2,16 +2,22 @@
 
 import 'dart:io';
 
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:oi/controller/location_controller.dart';
 import 'package:oi/controller/vehicle_controller.dart';
+import 'package:oi/providers/map/location_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/objects.dart';
 
 class VehicleProvider extends ChangeNotifier {
   final VehicleController _vehicleController = VehicleController();
+  final LocationController _locationController = LocationController();
   final ImagePicker _picker = ImagePicker();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -35,6 +41,14 @@ class VehicleProvider extends ChangeNotifier {
 
   void setIsVisible(int val) {
     _isSelected = val;
+    notifyListeners();
+  }
+
+  Future<void> showVehicles(BuildContext context, int val) async {
+  
+    // await _locationController.addDriversMarker();
+
+    
     notifyListeners();
   }
   // bool inputValidation() {

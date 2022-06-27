@@ -1,41 +1,100 @@
 {
   "project_info": {
-    "project_number": "828395746725",
-    "project_id": "io-satasme-6ddc8",
-    "storage_bucket": "io-satasme-6ddc8.appspot.com"
+    "project_number": "260989783896",
+    "firebase_url": "https://oi-app-2af0a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "oi-app-2af0a",
+    "storage_bucket": "oi-app-2af0a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:828395746725:android:1291d6e0de5eea2d80e44c",
+        "mobilesdk_app_id": "1:260989783896:android:5d4c3596565c02d2c35f2d",
         "android_client_info": {
-          "package_name": "com.satasme.oi"
+          "package_name": "com.oiapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "828395746725-j45m5cod1q390ube2mcfp6o5ap6ocdbl.apps.googleusercontent.com",
+          "client_id": "260989783896-02ui2lrjpakq6f6tob4kavbpqg82s340.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.satasme.oi",
-            "certificate_hash": "e6b9f34a34144b048f76f0b90bb1dbec4f25be31"
+            "package_name": "com.oiapp",
+            "certificate_hash": "6a096383a5d27abab7fda2e593bc33a4298ea36a"
           }
         },
         {
-          "client_id": "828395746725-63r3daieuska0fkd8nkc4h8rlgd27422.apps.googleusercontent.com",
+          "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBawPIBgMNWS1DBZI1LgOM1DqLujoTcPaA"
+          "current_key": "AIzaSyDsjeC4no2U1NRz6n73qoyOdRAwrHc5HbA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "828395746725-63r3daieuska0fkd8nkc4h8rlgd27422.apps.googleusercontent.com",
+              "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260989783896:android:c5aa3b68700bc6a7c35f2d",
+        "android_client_info": {
+          "package_name": "com.satasme.oi.passanger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsjeC4no2U1NRz6n73qoyOdRAwrHc5HbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260989783896:android:cbf725e4cf40a42ac35f2d",
+        "android_client_info": {
+          "package_name": "com.satasme.oi.passanger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsjeC4no2U1NRz6n73qoyOdRAwrHc5HbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "260989783896-p2iuo72p4gcmuncgouaekffctdivq612.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

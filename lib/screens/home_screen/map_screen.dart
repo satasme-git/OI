@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:oi/providers/map/location_provider.dart';
 import 'package:oi/utils/app_colors.dart';
 import 'package:oi/utils/util_funtions.dart';
@@ -19,6 +20,7 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   bool isSignupScreen = false;
+  bool _mapLoading = true;
   void isSignUp(bool val) {
     setState(() {
       isSignupScreen = val;
@@ -53,24 +55,25 @@ class MapSampleState extends State<MapSample> {
     newGooleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
-@override
+
+  @override
   void dispose() {
     _disposeController();
     super.dispose();
   }
 
-  Future<void> _disposeController() async{
+  Future<void> _disposeController() async {
     final GoogleMapController controller = await _controller.future;
     controller.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     //  if(clock_val>)
     final size = MediaQuery.of(context).size;
 
     List<String> myList = ['US', 'SG', 'US'];
-    print("##############################");
-    print(myList.where((item) => item.contains("US")));
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
@@ -197,7 +200,7 @@ class MapSampleState extends State<MapSample> {
           ],
         ),
       ),
-     
+
       body: Stack(
         children: [
           Container(
@@ -729,8 +732,6 @@ class MapWidget extends StatelessWidget {
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
     bool _isNight_map = false;
@@ -749,8 +750,8 @@ class MapWidget extends StatelessWidget {
     }
 
     var size = MediaQuery.of(context).size;
-    return Consumer2<UserProvider,LocationProvider>(
-      builder: (context, values,values2, child) {
+    return Consumer2<UserProvider, LocationProvider>(
+      builder: (context, values, values2, child) {
         return GoogleMap(
           myLocationButtonEnabled: false,
           compassEnabled: false,
@@ -761,7 +762,10 @@ class MapWidget extends StatelessWidget {
           zoomControlsEnabled: false,
           zoomGesturesEnabled: true,
           initialCameraPosition: _kGooglePlex,
+
           onMapCreated: (GoogleMapController controller) async {
+            _mapLoading = false;
+
             _controller.complete(controller);
             newGooleMapController = controller;
             String value = _isNight_map
@@ -773,7 +777,9 @@ class MapWidget extends StatelessWidget {
             locatePosition(values.getlattiude, values.getlongitude);
           },
           markers: values2.marker.values.toSet(),
+          
         );
+     
       },
     );
   }

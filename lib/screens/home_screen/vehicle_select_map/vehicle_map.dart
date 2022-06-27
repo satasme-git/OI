@@ -9,6 +9,7 @@ import 'package:logger/logger.dart';
 import 'package:oi/providers/map/vehicle_provider.dart';
 import 'package:oi/screens/home_screen/main_map/map_screen2.dart';
 import 'package:oi/screens/home_screen/map_screen.dart';
+import 'package:oi/screens/home_screen/search_vehicle_map/search_nearest_vehile.dart';
 import 'package:oi/screens/home_screen/vehicle_select_map/payment.dart';
 import 'package:oi/screens/home_screen/vehicle_select_map/widgets/custom_vehicle_card.dart';
 import 'package:oi/utils/constatnt.dart';
@@ -183,7 +184,7 @@ class _VehicleMapState extends State<VehicleMap> {
                         zoomControlsEnabled: false,
                         zoomGesturesEnabled: true,
                         initialCameraPosition: _locationColombo,
-                        onMapCreated: (controller) async {
+                        onMapCreated:  (GoogleMapController controller)async {
                           _controller.complete(controller);
 
                           String value = _isNight_map
@@ -257,11 +258,14 @@ class _VehicleMapState extends State<VehicleMap> {
             children: [
               InkWell(
                 onTap: () {
-                  UtilFuntions.pageTransition(
-                      context, PaymentScreen(), VehicleMap());
+                  // UtilFuntions.pageTransition(
+                  //     context, PaymentScreen(), VehicleMap());
+
+                    Provider.of<LocationProvider>(context, listen: false).getAllDrivers(4);
+
                 },
                 child: Row(
-                  children: [
+                  children:const [
                     Icon(
                       MaterialCommunityIcons.cash,
                       size: 30,
@@ -275,7 +279,7 @@ class _VehicleMapState extends State<VehicleMap> {
                 ),
               ),
               Row(
-                children: [
+                children:const [
                   Icon(
                     MaterialCommunityIcons.square_edit_outline,
                     size: 30,
@@ -287,7 +291,7 @@ class _VehicleMapState extends State<VehicleMap> {
                 ],
               ),
               Row(
-                children: [
+                children: const[
                   Icon(
                     MaterialCommunityIcons.cog_outline,
                     size: 30,
@@ -311,7 +315,9 @@ class _VehicleMapState extends State<VehicleMap> {
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                    UtilFuntions.pageTransition(context, SearchNearestVehicle(), const VehicleMap());
+              },
               child: Ink(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -362,6 +368,8 @@ class _VehicleMapState extends State<VehicleMap> {
 
     Provider.of<LocationProvider>(context, listen: false)
         .getPolyLineCodes(controller);
+    // Provider.of<LocationProvider>(context, listen: false)
+    //     .getAllDrivers();
   }
 
   AppBar _appBar() {
@@ -417,86 +425,3 @@ class _VehicleMapState extends State<VehicleMap> {
   }
 }
 
-
-
-// class CustomCardTile extends StatelessWidget {
-//   const CustomCardTile({
-//     required this.image,
-//     Key? key,
-//   }) : super(key: key);
-
-//   final String image;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-//       child: Container(
-//         width: 125,
-//         height: 160,
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(15),
-//           border: Border.all(
-//             color: Colors.black,
-//             width: 0.5,
-//           ),
-//         ),
-//         child: Container(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               Text("IN 21 mins"),
-//               Image.asset(
-//                 Constants.imageAsset(image),
-//                 scale: 3,
-//               ),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: const [
-//                   Text(
-//                     "Tuk",
-//                     style: TextStyle(
-//                       fontWeight: FontWeight.bold,
-//                     ),
-//                   ),
-//                   Icon(
-//                     MaterialCommunityIcons.account_outline,
-//                     size: 18,
-//                     color: Colors.grey,
-//                   ),
-//                   Text("2")
-//                 ],
-//               ),
-//               Padding(
-//                 padding: const EdgeInsets.symmetric(horizontal: 30),
-//                 child: new Divider(
-//                   color: Colors.grey,
-//                 ),
-//               ),
-//               const Text(
-//                 "LKR 176.37",
-//                 style: TextStyle(
-//                   fontWeight: FontWeight.bold,
-//                   fontSize: 16,
-//                 ),
-//               ),
-//               Row(
-//                 children: const [
-//                   Icon(
-//                     MaterialCommunityIcons.star,
-//                     color: Colors.amber,
-//                   ),
-//                   Text(
-//                     "Earn 1.8 stars",
-//                     style: TextStyle(
-//                       color: Colors.grey,
-//                     ),
-//                   )
-//                 ],
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

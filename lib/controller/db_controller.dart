@@ -4,7 +4,7 @@ class DatabaseController {
   //firestore instance create
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   //creare a collection reffrenace
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection('passengers');
 
   Future<void> saveUserData(
       String name, String email, String phone, String otp, String uid) {

@@ -1,16 +1,28 @@
-import 'dart:ui';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:logger/logger.dart';
+import 'package:oi/models/driver_model.dart';
+import 'package:provider/provider.dart';
 import '../models/place_model.dart';
+import '../providers/map/location_provider.dart';
 import '../screens/home_screen/vehicle_select_map/widgets/circle_marker.dart';
 import '../screens/home_screen/vehicle_select_map/widgets/place_to_marker.dart';
 import '../utils/fit_map.dart';
 import '../utils/global_data.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 class LocationController {
+  final radius = BehaviorSubject<double>.seeded(100.0);
+  final _firestore = FirebaseFirestore.instance;
+  final markers = <MarkerId, Marker>{};
+  late Stream<List<DocumentSnapshot>> stream;
+  late Geoflutterfire geo;
+  ////////////////////////////////////////////////////
   Map<String, Marker> marker = {};
   List<LatLng> polylineCoordinates = [];
   BitmapDescriptor? _dotMarker;
@@ -149,4 +161,37 @@ class LocationController {
     );
     return polylineCoordinates;
   }
+
+  void addDriversMarker()  {
+    geo = Geoflutterfire();
+    GeoFirePoint center = geo.point(latitude: 6.9543, longitude: 80.2046);
+    stream = radius.switchMap((rad) {
+      final collectionReference =
+          _firestore.collection('drivers').where('type', isEqualTo: '1');
+
+      return geo.collection(collectionRef: collectionReference).within(
+          center: center, radius: rad, field: 'position', strictMode: true);
+    });
+
+    stream.listen((List<DocumentSnapshot> documentList) {
+      documentList.forEach((DocumentSnapshot document) async {
+        final data = document.data() as Map<String, dynamic>;
+        final GeoPoint point = data['position']['geopoint'];
+        final id =
+            MarkerId(point.latitude.toString() + point.longitude.toString());
+
+        marker[id.toString()] = Marker(
+          markerId: id,
+          position: LatLng(point.latitude, point.longitude),
+          icon: await BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(2, 3)),
+              "assets/images/car_map.png"),
+          anchor: const Offset(0.5, 0.5),
+        );
+      });
+    });
+    
+  }
+
+
 }
