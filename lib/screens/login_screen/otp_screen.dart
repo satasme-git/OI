@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:oi/componants/custom_text.dart';
 import 'package:oi/providers/auth/otp_provider.dart';
 
@@ -63,9 +64,15 @@ class _OTPScreenState extends State<OTPScreen> {
                       const SizedBox(
                         height: 41,
                       ),
-                      Image.asset(
-                        Constants.imageAsset('phone_number.png'),
+                      Lottie.asset(
+                        'assets/images/114272-security.json',
+                        width: 160,
+                        // height: 200,
+                        fit: BoxFit.fill,
                       ),
+                      // Image.asset(
+                      //   Constants.imageAsset('phone_number.png'),
+                      // ),
                       const SizedBox(
                         height: 21,
                       ),
@@ -97,9 +104,10 @@ class _OTPScreenState extends State<OTPScreen> {
                                 ..onTap = () {
                                   value2.stopTimer();
                                   value.changeTryAgainBtnfalse();
-                                    UtilFuntions.pageTransition(
-              context, const AddPhoneNumber(), const OTPScreen());
-                                
+                                  UtilFuntions.pageTransition(
+                                      context,
+                                      const AddPhoneNumber(),
+                                      const OTPScreen());
                                 },
                               text: "  Change",
                               style: const TextStyle(
@@ -135,7 +143,6 @@ class _OTPScreenState extends State<OTPScreen> {
                           //   if (timer.stopEnable) {
                           //     value2.stopTimer();
 
-                          
                           value.fetchSingleUser(context, value.getOTPCode);
                           value.changeTryAgainBtnfalse();
                           //   }

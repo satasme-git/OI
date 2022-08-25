@@ -115,7 +115,9 @@ class _AddDriverState extends State<AddDriver> {
                               );
                             },
                             child: Text(
-                              value.addressString==''?'Set address':value.addressString,
+                              value.addressString == ''
+                                  ? 'Set address'
+                                  : value.addressString,
                             ),
                             // child: addressTile(
                             //   Icons.work_outline,

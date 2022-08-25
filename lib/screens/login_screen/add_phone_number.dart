@@ -6,6 +6,7 @@ import 'package:oi/providers/auth/otp_provider.dart';
 import 'package:oi/providers/auth/timer_provider.dart';
 import 'package:oi/utils/constatnt.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart';
 
 class AddPhoneNumber extends StatefulWidget {
   const AddPhoneNumber({Key? key}) : super(key: key);
@@ -46,9 +47,15 @@ class _AddPhoneNumberState extends State<AddPhoneNumber> {
                     const SizedBox(
                       height: 41,
                     ),
-                    Image.asset(
-                      Constants.imageAsset('phone_number.png'),
+                    Lottie.asset(
+                      'assets/images/36562-man-with-a-phone.json',
+                      width: 200,
+                      // height: 200,
+                      fit: BoxFit.fill,
                     ),
+                    // Image.asset(
+                    //   Constants.imageAsset('phone_number.png'),
+                    // ),
                     const SizedBox(
                       height: 21,
                     ),
@@ -120,7 +127,6 @@ class _AddPhoneNumberState extends State<AddPhoneNumber> {
                                   decoration: const InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Mobile Number',
-
                                   ),
                                 );
                               },
@@ -160,7 +166,6 @@ class _AddPhoneNumberState extends State<AddPhoneNumber> {
                               ),
                               onPressed: () {
                                 value.startRegister(context);
-                   
                               },
                               child: Ink(
                                 width: double.infinity,

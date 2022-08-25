@@ -53,8 +53,6 @@ class _VehicleMapState extends State<VehicleMap> {
     controller!.dispose();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -184,7 +182,7 @@ class _VehicleMapState extends State<VehicleMap> {
                         zoomControlsEnabled: false,
                         zoomGesturesEnabled: true,
                         initialCameraPosition: _locationColombo,
-                        onMapCreated:  (GoogleMapController controller)async {
+                        onMapCreated: (GoogleMapController controller) async {
                           _controller.complete(controller);
 
                           String value = _isNight_map
@@ -198,9 +196,6 @@ class _VehicleMapState extends State<VehicleMap> {
                           // values.setFocus("pick");
                           _goToTheLake(values.getPick?.position?.latitude,
                               values.getPick?.position?.longitude);
-
-                              
-
                         },
                         markers: values.markers.values.toSet(),
                         polylines: values.getPolyline,
@@ -261,11 +256,11 @@ class _VehicleMapState extends State<VehicleMap> {
                   // UtilFuntions.pageTransition(
                   //     context, PaymentScreen(), VehicleMap());
 
-                    Provider.of<LocationProvider>(context, listen: false).getAllDrivers(4);
-
+                  Provider.of<LocationProvider>(context, listen: false)
+                      .getAllDrivers(4);
                 },
                 child: Row(
-                  children:const [
+                  children: const [
                     Icon(
                       MaterialCommunityIcons.cash,
                       size: 30,
@@ -279,7 +274,7 @@ class _VehicleMapState extends State<VehicleMap> {
                 ),
               ),
               Row(
-                children:const [
+                children: const [
                   Icon(
                     MaterialCommunityIcons.square_edit_outline,
                     size: 30,
@@ -291,7 +286,7 @@ class _VehicleMapState extends State<VehicleMap> {
                 ],
               ),
               Row(
-                children: const[
+                children: const [
                   Icon(
                     MaterialCommunityIcons.cog_outline,
                     size: 30,
@@ -316,7 +311,8 @@ class _VehicleMapState extends State<VehicleMap> {
                 ),
               ),
               onPressed: () {
-                    UtilFuntions.pageTransition(context, SearchNearestVehicle(), const VehicleMap());
+                UtilFuntions.pageTransition(
+                    context, SearchNearestVehicle(), const VehicleMap());
               },
               child: Ink(
                 width: double.infinity,
@@ -368,6 +364,8 @@ class _VehicleMapState extends State<VehicleMap> {
 
     Provider.of<LocationProvider>(context, listen: false)
         .getPolyLineCodes(controller);
+
+    Logger().d(">>>>>>>>>>>>>>>>>>>>>>> : ");
     // Provider.of<LocationProvider>(context, listen: false)
     //     .getAllDrivers();
   }
@@ -424,4 +422,3 @@ class _VehicleMapState extends State<VehicleMap> {
     );
   }
 }
-

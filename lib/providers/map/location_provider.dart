@@ -4,6 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+// import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/location_controller.dart';
@@ -186,22 +187,16 @@ pass latitude and longitude, then get location with location id and address, pas
   }
 
   void getAllDrivers(int val) {
-   
     if (val == 0) {
-     
       vehileStream("assets/images/tuk_map.png", val);
-     
     } else if (val == 1) {
-      
       vehileStream("assets/images/car_map.png", val);
     } else if (val == 3) {
-      
       vehileStream("assets/images/prius_map.png", val);
     } else if (val == 5) {
-     
       vehileStream("assets/images/KDH_map.png", val);
     }
-     removeMarkers();
+    removeMarkers();
   }
 
   void vehileStream(image, value) {
@@ -234,21 +229,19 @@ pass latitude and longitude, then get location with location id and address, pas
   }
 
   void removeMarkers() {
-
- Logger().d("^^^^^^^^^^^^^^^^^ : "+marker.values.length.toString());
+    Logger().d("^^^^^^^^^^^^^^^^^ : " + marker.values.length.toString());
 
     // for (var values in marker.values) {
-     
-      marker.removeWhere(
-        (key, marker) =>
-            marker.markerId.value != "pick" &&
-            marker.markerId.value != "drop" &&
-            marker.markerId.value != "dropdot" &&
-            marker.markerId.value != "pickdot",
-      );
-     notifyListeners();
-      // 
+
+    marker.removeWhere(
+      (key, marker) =>
+          marker.markerId.value != "pick" &&
+          marker.markerId.value != "drop" &&
+          marker.markerId.value != "dropdot" &&
+          marker.markerId.value != "pickdot",
+    );
+    notifyListeners();
+    //
     // }
-     
   }
 }

@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+// import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/controller/auth_controller.dart';
@@ -24,7 +26,8 @@ import '../../screens/login_screen/add_phone_number.dart';
 class UserProvider extends ChangeNotifier {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('passengers');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('passengers');
   final LocationController _locationController = LocationController();
   bool validate() {
     if (formkey.currentState!.validate()) {
@@ -226,6 +229,4 @@ class UserProvider extends ChangeNotifier {
     _authController.updateHomeAddress(_userModel);
     notifyListeners();
   }
-
-  
 }

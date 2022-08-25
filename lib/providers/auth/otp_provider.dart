@@ -47,7 +47,6 @@ class OTPProvider extends ChangeNotifier {
   TextEditingController get phoneController => _phoneNumber;
   TextEditingController get otpCodeController => _otpCode;
 
-
   String get getOTPCode => _otpcode;
   String get errorString => _errorString;
   String get otperrorString => _otperrorString;
@@ -68,13 +67,13 @@ class OTPProvider extends ChangeNotifier {
   }
 
   void get6DigitNumber() {
-    
     Random random = Random();
     String number = "";
     for (int i = 0; i < 4; i++) {
       number = number + random.nextInt(9).toString();
     }
     _otpcode = number;
+    Logger().d("UUUUUUUUUUUUUUUUUUUUUU : " + number);
     notifyListeners();
   }
 
@@ -111,7 +110,6 @@ class OTPProvider extends ChangeNotifier {
   }
 
   Future<void> startRegister(BuildContext context) async {
-
     UserModel userModel;
     try {
       get6DigitNumber();
@@ -140,7 +138,6 @@ class OTPProvider extends ChangeNotifier {
           } else {
             userModel = (await AuthController().registerUser(
               context,
-              
               _phoneNumber.text,
               otp,
             ))!;
@@ -178,7 +175,8 @@ class OTPProvider extends ChangeNotifier {
       bool startEnable =
           Provider.of<TimerProvider>(context, listen: false).startEnable;
       if (!startEnable) {
-        userModel = Provider.of<UserProvider>(context, listen: false).getuserModel;
+        userModel =
+            Provider.of<UserProvider>(context, listen: false).getuserModel;
 
         if (_otpCode.text == userModel!.otp) {
           prefs.setString('phone_number', _phoneNumber.text);
@@ -188,7 +186,7 @@ class OTPProvider extends ChangeNotifier {
                 context, const SignUp(), const OTPScreen());
           } else {
             UtilFuntions.pageTransition(
-                context,  MapSample2(), const OTPScreen());
+                context, MapSample2(), const OTPScreen());
           }
 
           Provider.of<TimerProvider>(context, listen: false).stopTimer();
@@ -208,8 +206,9 @@ class OTPProvider extends ChangeNotifier {
   }
 
   void sendOtp(otp) async {
+    Logger().d("IIIIIIIIIIIIIIIIIIIIIIIIIIIII : " + otp);
     final response = await http.post(
-      Uri.parse('https://boxesfree.shop/send_sms_by_otp.php'),
+      Uri.parse('https://bxladmin.monthekristho.com/pages/send_sms_by_otp.php'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

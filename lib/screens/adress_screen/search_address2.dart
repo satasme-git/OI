@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:logger/logger.dart';
 import 'package:oi/models/objects.dart';
@@ -362,7 +363,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
                                             ),
                                           ),
                                         )
-                                      : setSelectedAddress(context,"home");
+                                      : setSelectedAddress(context, "home");
                                 },
                                 child: addressTile(
                                   Icons.home_outlined,
@@ -429,7 +430,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
                                             ),
                                           ),
                                         )
-                                      : setSelectedAddress(context,"work");
+                                      : setSelectedAddress(context, "work");
                                 },
                                 child: addressTile(
                                   Icons.work_outline,
@@ -561,7 +562,7 @@ class _SearchAddress2State extends State<SearchAddress2> {
       );
     }
     //fetch vehicles
-    Provider.of<VehicleProvider>(context,listen:false).fetchVehicles();
+    Provider.of<VehicleProvider>(context, listen: false).fetchVehicles();
   }
 }
 
@@ -633,12 +634,12 @@ class AddressInput extends StatelessWidget {
   }
 }
 
-setSelectedAddress(BuildContext context,String res) {
+setSelectedAddress(BuildContext context, String res) {
   String value =
       Provider.of<LocationProvider>(context, listen: false).pickLocationfocus;
   if (value == "pick") {
     Provider.of<LocationProvider>(context, listen: false)
-        .startAddSelectedPlace(context,res);
+        .startAddSelectedPlace(context, res);
 
     Navigator.push(
       context,
@@ -646,15 +647,13 @@ setSelectedAddress(BuildContext context,String res) {
     );
   } else if (value == "drop") {
     Provider.of<LocationProvider>(context, listen: false)
-        .startAddSelectedPlace(context,res);
+        .startAddSelectedPlace(context, res);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (BuildContext context) => VehicleMap()),
     );
   }
 
-   //fetch vehicles
-    Provider.of<VehicleProvider>(context,listen:false).fetchVehicles();
-
-
+  //fetch vehicles
+  Provider.of<VehicleProvider>(context, listen: false).fetchVehicles();
 }
